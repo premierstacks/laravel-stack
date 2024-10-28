@@ -1,0 +1,41 @@
+{
+  "name": "@premierstacks/laravel-stack",
+  "description": "laravel stack",
+  "keywords": [
+    "tomchochola",
+    "premierstacks",
+    "laravel-stack"
+  ],
+  "homepage": "https://github.com/premierstacks/laravel-stack",
+  "bugs": {
+    "email": "chocholatom1997@gmail.com",
+    "url": "https://github.com/premierstacks/laravel-stack/issues"
+  },
+  "license": "SEE LICENSE IN ./LICENSE.md",
+  "author": {
+    "email": "chocholatom1997@gmail.com",
+    "name": "Tomáš Chochola",
+    "url": "https://github.com/tomchochola"
+  },
+  "contributors": [
+    {
+      "email": "chocholatom1997@gmail.com",
+      "name": "Tomáš Chochola",
+      "url": "https://github.com/tomchochola"
+    }
+  ],
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tomchochola"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/premierstacks/laravel-stack.git"
+  },
+  "devDependencies": {
+    "@premierstacks/eslint-stack": "github:premierstacks/eslint-stack",
+    "@premierstacks/prettier-stack": "github:premierstacks/prettier-stack"
+  },
+  "private": true,
+  "type": "module"
+}

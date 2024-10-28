@@ -1,0 +1,79 @@
+{
+  "name": "premierstacks/laravel-stack",
+  "description": "laravel stack",
+  "type": "library",
+  "keywords": [
+    "tomchochola",
+    "premierstacks",
+    "laravel-stack"
+  ],
+  "homepage": "https://github.com/premierstacks/laravel-stack",
+  "readme": "./README.md",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Tomáš Chochola",
+      "email": "chocholatom1997@gmail.com",
+      "homepage": "https://github.com/tomchochola",
+      "role": "Author"
+    }
+  ],
+  "support": {
+    "email": "chocholatom1997@gmail.com",
+    "issues": "https://github.com/premierstacks/laravel-stack/issues",
+    "source": "https://github.com/premierstacks/laravel-stack.git",
+    "docs": "https://github.com/premierstacks/laravel-stack"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/tomchochola"
+    }
+  ],
+  "require": {
+    "laravel/framework": "^11.22",
+    "premierstacks/php-stack": "@dev"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.23",
+    "orchestra/testbench": "^9.4",
+    "phpunit/phpunit": "^11.3",
+    "premierstacks/php-cs-fixer-stack": "@dev",
+    "premierstacks/phpstan-stack": "@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Premierstacks\\LaravelStack\\": "./src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "./tests"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/premierstacks/php-cs-fixer-stack.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/premierstacks/phpstan-stack.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/premierstacks/php-stack.git"
+    }
+  ],
+  "config": {
+    "allow-plugins": {
+      "phpstan/extension-installer": true
+    },
+    "audit": {
+      "abandoned": "fail"
+    },
+    "platform-check": true
+  }
+}

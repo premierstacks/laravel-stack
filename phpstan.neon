@@ -1,0 +1,8 @@
+includes:
+  - ./vendor/premierstacks/phpstan-stack/src/configs/premierstacks.neon
+
+parameters:
+  paths:
+    - ./lang
+    - ./resources
+    - ./src

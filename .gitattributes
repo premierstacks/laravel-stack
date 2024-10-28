@@ -1,0 +1,6 @@
+* text=auto eol=lf
+
+*.svg -merge -diff
+
+composer.lock -merge -diff
+package-lock.json -merge -diff

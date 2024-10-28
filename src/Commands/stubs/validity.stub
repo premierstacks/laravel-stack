@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Premierstacks\LaravelStack\Validation\Validity;
+use Premierstacks\LaravelStack\Validation\IntegerValidity;
+use Premierstacks\LaravelStack\Validation\CarbonValidity;
+
+class {{ class }}
+{
+    public function id(): IntegerValidity
+    {
+        return Validity::integer()->unsignedBigInt(min: 1);
+    }
+
+    public function createdAt(): CarbonValidity
+    {
+        return Validity::carbon()->utc();
+    }
+
+    public function updatedAt(): CarbonValidity
+    {
+        return Validity::carbon()->utc();
+    }
+}
