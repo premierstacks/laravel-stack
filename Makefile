@@ -30,6 +30,10 @@ check: lint stan audit
 
 .PHONY: clean
 clean:
+	rm -rf ./.php-cs-fixer.cache
+	rm -rf ./.phpunit.cache
+	rm -rf ./.phpunit.coverage
+	rm -rf ./.phpunit.result.cache
 	rm -rf ./composer.lock
 	rm -rf ./node_modules
 	rm -rf ./package-lock.json
@@ -40,7 +44,7 @@ commit: fix check
 
 .PHONY: coverage
 coverage: ./.phpunit.coverage/html
-	php -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
+	${MAKE_PHP} -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
 
 .PHONY: development
 development: local
@@ -80,10 +84,11 @@ local: ./vendor/autoload.php
 	${MAKE_COMPOSER} dump-autoload -o --dev --strict-psr
 
 .PHONY: production
-production: local
+production: staging
 
 .PHONY: staging
 staging: local
+	${MAKE_COMPOSER} dump-autoload -a --no-dev --strict-psr
 
 .PHONY: stan
 stan: stan_phpstan
@@ -99,13 +104,14 @@ test: test_phpunit
 test_phpunit: ./.phpunit.coverage/html
 
 ./.phpunit.coverage/html: ./vendor/bin/phpunit ./phpunit.xml
+	${MAKE_COMPOSER} dump-autoload -o --dev --strict-psr
 	${MAKE_PHP} ./vendor/bin/phpunit
 
 .PHONY: testing
 testing: local
 
 # Dependencies
-./node_modules ./node_modules/.bin/eslint ./node_modules/.bin/prettier: ./package-lock.json
+ ./node_modules ./node_modules/.bin/eslint ./node_modules/.bin/prettier: ./package-lock.json
 	npm install --install-links --include prod --include dev --include peer --include optional
 	touch ./package-lock.json
 	touch ./node_modules
