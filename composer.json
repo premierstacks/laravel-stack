@@ -32,7 +32,8 @@
   ],
   "require": {
     "laravel/framework": "^11.22",
-    "premierstacks/php-stack": "@dev"
+    "premierstacks/php-stack": "@dev",
+    "laravel/scout": "^10.11"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23",
