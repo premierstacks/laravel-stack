@@ -33,6 +33,6 @@ class FloatRule extends ValidationRule
     #[\Override]
     public function passes(string $attribute, mixed $value, Validator $validator, \Closure $fail): array|bool|null
     {
-        return !(!\is_float($value));
+        return \filter_var($value, \FILTER_VALIDATE_FLOAT) !== false;
     }
 }
