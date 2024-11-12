@@ -43,7 +43,7 @@ clean:
 commit: fix check
 
 .PHONY: coverage
-coverage: ./.phpunit.coverage/html
+coverage: test
 	${MAKE_PHP} -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
 
 .PHONY: development
@@ -101,9 +101,7 @@ stan_phpstan: ./vendor/bin/phpstan ./phpstan.neon
 test: test_phpunit
 
 .PHONY: test_phpunit
-test_phpunit: ./.phpunit.coverage/html
-
-./.phpunit.coverage/html: ./vendor/bin/phpunit ./phpunit.xml
+test_phpunit: ./vendor/bin/phpunit ./phpunit.xml
 	${MAKE_COMPOSER} dump-autoload -o --dev --strict-psr
 	${MAKE_PHP} ./vendor/bin/phpunit
 

@@ -23,10 +23,11 @@ namespace Premierstacks\LaravelStack\Geo\Rules;
 use Illuminate\Translation\PotentiallyTranslatedString;
 use Illuminate\Validation\Validator;
 use Premierstacks\LaravelStack\Geo\Objects\Point;
+use Premierstacks\LaravelStack\Validation\Rules\ValidationRule;
 use Premierstacks\PhpStack\Encoding\Json;
 use Premierstacks\PhpStack\Mixed\Filter;
 
-class PointRule extends \Premierstacks\LaravelStack\Validation\Rules\ValidationRule
+class PointRule extends ValidationRule
 {
     /**
      * @param (\Closure(Point, string, mixed, Validator, \Closure(string): PotentiallyTranslatedString): bool|null)|null $validate
