@@ -29,7 +29,7 @@ use Premierstacks\LaravelStack\Geo\Objects\Point;
 use Premierstacks\LaravelStack\Geo\Rules\PointRule;
 use Premierstacks\LaravelStack\Validation\Validity\FloatValidity;
 use Premierstacks\LaravelStack\Validation\Validity\ListValidity;
-use Premierstacks\LaravelStack\Validation\Validity\Mapvalidity;
+use Premierstacks\LaravelStack\Validation\Validity\MapValidity;
 use Premierstacks\LaravelStack\Validation\Validity\StringValidity;
 use Premierstacks\LaravelStack\Validation\Validity\Validity;
 
@@ -65,7 +65,7 @@ class GeoValidity
     /**
      * @param (\Closure(Point, string, mixed, Validator, \Closure(string): PotentiallyTranslatedString): bool|null)|null $validate
      */
-    public function point(\Closure|null $validate = null): Mapvalidity
+    public function point(\Closure|null $validate = null): MapValidity
     {
         return Validity::map()->exact(['lat', 'lng'])->add(new PointRule($validate));
     }

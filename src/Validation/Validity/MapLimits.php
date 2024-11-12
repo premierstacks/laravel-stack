@@ -22,12 +22,12 @@ namespace Premierstacks\LaravelStack\Validation\Validity;
 
 class MapLimits
 {
-    public function __construct(public Mapvalidity $validity) {}
+    public function __construct(public MapValidity $validity) {}
 
     /**
      * @param array<array-key, string> $structure
      */
-    public function exact(array $structure): Mapvalidity
+    public function exact(array $structure): MapValidity
     {
         return $this->validity->exact($structure);
     }
@@ -35,7 +35,7 @@ class MapLimits
     /**
      * @param array<array-key, string> $structure
      */
-    public function include(array $structure): Mapvalidity
+    public function include(array $structure): MapValidity
     {
         return $this->validity->includes($structure);
     }
@@ -43,7 +43,7 @@ class MapLimits
     /**
      * @param array<array-key, array-key> $keys
      */
-    public function key(array $keys): Mapvalidity
+    public function key(array $keys): MapValidity
     {
         return $this->validity->key($keys, true);
     }
@@ -51,12 +51,12 @@ class MapLimits
     /**
      * @param array<array-key, array-key> $keys
      */
-    public function keys(array $keys): Mapvalidity
+    public function keys(array $keys): MapValidity
     {
         return $this->validity->keys($keys, true);
     }
 
-    public function unlimited(): Mapvalidity
+    public function unlimited(): MapValidity
     {
         return $this->validity;
     }

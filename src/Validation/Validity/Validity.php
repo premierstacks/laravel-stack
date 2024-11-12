@@ -54,7 +54,7 @@ class Validity
 
     public static function map(): MapLimits
     {
-        return new MapLimits(new Mapvalidity());
+        return new MapLimits(new MapValidity());
     }
 
     public static function mixed(): MixedValidity

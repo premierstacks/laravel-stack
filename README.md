@@ -195,7 +195,7 @@ use Premierstacks\LaravelStack\Validation\Validity\IntegerValidity;
 use Premierstacks\LaravelStack\Validation\Validity\ListLimits;
 use Premierstacks\LaravelStack\Validation\Validity\ListValidity;
 use Premierstacks\LaravelStack\Validation\Validity\MapLimits;
-use Premierstacks\LaravelStack\Validation\Validity\Mapvalidity;
+use Premierstacks\LaravelStack\Validation\Validity\MapValidity;
 use Premierstacks\LaravelStack\Validation\Validity\MixedValidity;
 use Premierstacks\LaravelStack\Validation\Validity\ScalarValidityTrait;
 use Premierstacks\LaravelStack\Validation\Validity\SizeValidityTrait;
@@ -487,7 +487,7 @@ The following is a breakdown of the folder and file structure within this reposi
     │       ├── ListLimits.php
     │       ├── ListValidity.php
     │       ├── MapLimits.php
-    │       ├── Mapvalidity.php
+    │       ├── MapValidity.php
     │       ├── MixedValidity.php
     │       ├── ScalarValidityTrait.php
     │       ├── SizeValidityTrait.php

@@ -24,7 +24,7 @@ use Premierstacks\LaravelStack\Validation\Rules\KeyRule;
 use Premierstacks\LaravelStack\Validation\Rules\KeysRule;
 use Premierstacks\LaravelStack\Validation\Rules\MapRule;
 
-class Mapvalidity extends MixedValidity
+class MapValidity extends MixedValidity
 {
     /**
      * @param array<array-key, string> $keys
