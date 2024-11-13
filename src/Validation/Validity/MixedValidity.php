@@ -67,8 +67,6 @@ class MixedValidity
      */
     public array $rules = [];
 
-    public int $skip = 0;
-
     public bool $sometimes = false;
 
     public function __construct() {}
@@ -80,10 +78,6 @@ class MixedValidity
      */
     public function add(ValidationRule|string $rule, array|null $arguments = null): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         if (\is_string($rule)) {
             $rule = $this->encodeRule($rule, $arguments);
         }
@@ -100,10 +94,6 @@ class MixedValidity
      */
     public function bail(): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->bail = true;
 
         return $this;
@@ -273,10 +263,6 @@ class MixedValidity
      */
     public function filled(): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->filled = true;
 
         return $this;
@@ -313,50 +299,10 @@ class MixedValidity
     }
 
     /**
-     * @param bool|callable(): bool $flag
-     *
-     * @return $this
-     */
-    public function if(bool|callable $flag, int $skip = 1): static
-    {
-        if (\is_callable($flag)) {
-            $flag = $flag();
-        }
-
-        if (!$flag) {
-            return $this->skip($skip);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param bool|callable(): bool $flag
-     *
-     * @return $this
-     */
-    public function ifNot(bool|callable $flag, int $skip = 1): static
-    {
-        if (\is_callable($flag)) {
-            $flag = $flag();
-        }
-
-        if ($flag) {
-            return $this->skip($skip);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return $this
      */
     public function missing(): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->missing = true;
 
         return $this;
@@ -407,10 +353,6 @@ class MixedValidity
      */
     public function nullable(): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->nullable = true;
 
         return $this;
@@ -421,10 +363,6 @@ class MixedValidity
      */
     public function present(): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->present = true;
 
         return $this;
@@ -435,10 +373,6 @@ class MixedValidity
      */
     public function prohibited(): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->prohibited = true;
 
         return $this;
@@ -519,10 +453,6 @@ class MixedValidity
      */
     public function required(): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->required = true;
 
         return $this;
@@ -603,22 +533,8 @@ class MixedValidity
     /**
      * @return $this
      */
-    public function skip(int $skip = 1): static
-    {
-        $this->skip += $skip;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
     public function sometimes(): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->sometimes = true;
 
         return $this;
@@ -631,21 +547,7 @@ class MixedValidity
      */
     public function tap(\Closure $callback): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $callback($this);
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function unskip(int $skip = 1): static
-    {
-        $this->skip -= $skip;
 
         return $this;
     }

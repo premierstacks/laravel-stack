@@ -21,7 +21,7 @@ declare(strict_types=1);
 namespace Premierstacks\LaravelStack\Validation\Rules;
 
 use Illuminate\Validation\Validator;
-use Premierstacks\LaravelStack\Config\Conf;
+use Premierstacks\LaravelStack\Enums\CzPostCodeEnum;
 
 class CzBankAccountNumberRule extends ValidationRule
 {
@@ -38,65 +38,7 @@ class CzBankAccountNumberRule extends ValidationRule
     /**
      * @var array<array-key, string>
      */
-    public static array $bankCodes = [
-        '0100',
-        '0300',
-        '0600',
-        '0710',
-        '0800',
-        '2010',
-        '2020',
-        '2060',
-        '2070',
-        '2100',
-        '2200',
-        '2220',
-        '2250',
-        '2260',
-        '2275',
-        '2600',
-        '2700',
-        '3030',
-        '3050',
-        '3060',
-        '3500',
-        '4000',
-        '4300',
-        '5500',
-        '5800',
-        '6000',
-        '6100',
-        '6200',
-        '6210',
-        '6300',
-        '6700',
-        '6800',
-        '7910',
-        '7950',
-        '7960',
-        '7970',
-        '7990',
-        '8030',
-        '8040',
-        '8060',
-        '8090',
-        '8150',
-        '8190',
-        '8198',
-        '8199',
-        '8200',
-        '8220',
-        '8230',
-        '8240',
-        '8250',
-        '8255',
-        '8265',
-        '8270',
-        '8280',
-        '8293',
-        '8299',
-        '8500',
-    ];
+    public static array $bankCodes = [];
 
     /**
      * Create a new rule instance.
@@ -121,10 +63,6 @@ class CzBankAccountNumberRule extends ValidationRule
             return false;
         }
 
-        if (Conf::inject()->isAppEnv(['testing'])) {
-            return true;
-        }
-
         if (\preg_match('/^(([0-9]{0,6})-)?([0-9]{2,10})\/([0-9]{4})$/', $value, $parts) !== 1) {
             return false;
         }
@@ -141,7 +79,7 @@ class CzBankAccountNumberRule extends ValidationRule
             return true;
         }
 
-        return !(!\in_array($parts[4], static::$bankCodes, true));
+        return !(!\in_array($parts[4], static::$bankCodes === [] ? CzPostCodeEnum::values() : static::$bankCodes, true));
     }
 
     /**

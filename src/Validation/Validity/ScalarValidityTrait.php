@@ -46,110 +46,12 @@ trait ScalarValidityTrait
     }
 
     /**
-     * @template TT of Model
-     * @template T of Builder<TT>
-     *
-     * @param \Closure(mixed, string): T $callback
-     * @param \Closure(T, mixed, string): bool|null $each
-     *
-     * @return $this
-     */
-    public function findByKey(\Closure $callback, \Closure|null $each = null): static
-    {
-        return $this->add(
-            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
-                $builder = $callback($value, $attribute);
-
-                $builder->whereKey($value);
-
-                $exists = $builder->toBase()->exists();
-
-                if (!$exists) {
-                    return false;
-                }
-
-                if ($each === null) {
-                    return true;
-                }
-
-                return $each($builder, $value, $attribute);
-            }),
-        );
-    }
-
-    /**
-     * @template TT of Model
-     * @template T of Builder<TT>
-     *
-     * @param \Closure(mixed, string): T $callback
-     * @param \Closure(T, mixed, string): bool|null $each
-     *
-     * @return $this
-     */
-    public function findByRouteKey(\Closure $callback, \Closure|null $each = null): static
-    {
-        return $this->add(
-            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
-                $builder = $callback($value, $attribute);
-
-                $builder->where($builder->qualifyColumn(Assert::instance($builder->getModel(), Model::class)->getRouteKeyName()), '=', $value);
-
-                $exists = $builder->toBase()->exists();
-
-                if (!$exists) {
-                    return false;
-                }
-
-                if ($each === null) {
-                    return true;
-                }
-
-                return $each($builder, $value, $attribute);
-            }),
-        );
-    }
-
-    /**
-     * @template TT of Model
-     * @template T of Builder<TT>
-     *
-     * @param \Closure(mixed, string): T $callback
-     * @param \Closure(T, mixed, string): bool|null $each
-     *
-     * @return $this
-     */
-    public function findByScope(\Closure $callback, \Closure|null $each = null): static
-    {
-        return $this->add(
-            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
-                $builder = $callback($value, $attribute);
-
-                $exists = $builder->toBase()->exists();
-
-                if (!$exists) {
-                    return false;
-                }
-
-                if ($each === null) {
-                    return true;
-                }
-
-                return $each($builder, $value, $attribute);
-            }),
-        );
-    }
-
-    /**
      * @param array<array-key, mixed> $values
      *
      * @return $this
      */
     public function in(array $values): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->in = $values;
 
         return $this;
@@ -164,110 +66,12 @@ trait ScalarValidityTrait
     }
 
     /**
-     * @template TT of Model
-     * @template T of Builder<TT>
-     *
-     * @param \Closure(mixed, string): T $callback
-     * @param \Closure(T, mixed, string): bool|null $each
-     *
-     * @return $this
-     */
-    public function notFindByKey(\Closure $callback, \Closure|null $each = null): static
-    {
-        return $this->add(
-            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
-                $builder = $callback($value, $attribute);
-
-                $builder->whereKey($value);
-
-                $exists = $builder->toBase()->exists();
-
-                if (!$exists) {
-                    return true;
-                }
-
-                if ($each === null) {
-                    return false;
-                }
-
-                return $each($builder, $value, $attribute);
-            }),
-        );
-    }
-
-    /**
-     * @template TT of Model
-     * @template T of Builder<TT>
-     *
-     * @param \Closure(mixed, string): T $callback
-     * @param \Closure(T, mixed, string): bool|null $each
-     *
-     * @return $this
-     */
-    public function notFindByRouteKey(\Closure $callback, \Closure|null $each = null): static
-    {
-        return $this->add(
-            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
-                $builder = $callback($value, $attribute);
-
-                $builder->where($builder->qualifyColumn(Assert::instance($builder->getModel(), Model::class)->getRouteKeyName()), '=', $value);
-
-                $exists = $builder->toBase()->exists();
-
-                if (!$exists) {
-                    return true;
-                }
-
-                if ($each === null) {
-                    return false;
-                }
-
-                return $each($builder, $value, $attribute);
-            }),
-        );
-    }
-
-    /**
-     * @template TT of Model
-     * @template T of Builder<TT>
-     *
-     * @param \Closure(mixed, string): T $callback
-     * @param \Closure(T, mixed, string): bool|null $each
-     *
-     * @return $this
-     */
-    public function notFindByScope(\Closure $callback, \Closure|null $each = null): static
-    {
-        return $this->add(
-            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
-                $builder = $callback($value, $attribute);
-
-                $exists = $builder->toBase()->exists();
-
-                if (!$exists) {
-                    return true;
-                }
-
-                if ($each === null) {
-                    return false;
-                }
-
-                return $each($builder, $value, $attribute);
-            }),
-        );
-    }
-
-    /**
      * @param array<array-key, mixed> $values
      *
      * @return $this
      */
     public function notIn(array $values): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->notIn = $values;
 
         return $this;
@@ -382,6 +186,100 @@ trait ScalarValidityTrait
     }
 
     /**
+     * @template TT of Model
+     * @template T of Builder<TT>
+     *
+     * @param \Closure(mixed, string): T $callback
+     * @param \Closure(T, mixed, string): bool|null $each
+     *
+     * @return $this
+     */
+    public function notRetrieveByKey(\Closure $callback, \Closure|null $each = null): static
+    {
+        return $this->add(
+            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
+                $builder = $callback($value, $attribute);
+
+                $builder->whereKey($value);
+
+                $exists = $builder->toBase()->exists();
+
+                if (!$exists) {
+                    return true;
+                }
+
+                if ($each === null) {
+                    return false;
+                }
+
+                return $each($builder, $value, $attribute);
+            }),
+        );
+    }
+
+    /**
+     * @template TT of Model
+     * @template T of Builder<TT>
+     *
+     * @param \Closure(mixed, string): T $callback
+     * @param \Closure(T, mixed, string): bool|null $each
+     *
+     * @return $this
+     */
+    public function notRetrieveByRouteKey(\Closure $callback, \Closure|null $each = null): static
+    {
+        return $this->add(
+            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
+                $builder = $callback($value, $attribute);
+
+                $builder->where($builder->qualifyColumn(Assert::instance($builder->getModel(), Model::class)->getRouteKeyName()), '=', $value);
+
+                $exists = $builder->toBase()->exists();
+
+                if (!$exists) {
+                    return true;
+                }
+
+                if ($each === null) {
+                    return false;
+                }
+
+                return $each($builder, $value, $attribute);
+            }),
+        );
+    }
+
+    /**
+     * @template TT of Model
+     * @template T of Builder<TT>
+     *
+     * @param \Closure(mixed, string): T $callback
+     * @param \Closure(T, mixed, string): bool|null $each
+     *
+     * @return $this
+     */
+    public function notRetrieveByScope(\Closure $callback, \Closure|null $each = null): static
+    {
+        return $this->add(
+            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
+                $builder = $callback($value, $attribute);
+
+                $exists = $builder->toBase()->exists();
+
+                if (!$exists) {
+                    return true;
+                }
+
+                if ($each === null) {
+                    return false;
+                }
+
+                return $each($builder, $value, $attribute);
+            }),
+        );
+    }
+
+    /**
      * @template T of Builder
      *
      * @param \Closure(): T $callback
@@ -485,6 +383,100 @@ trait ScalarValidityTrait
                 }
 
                 return $each($value, $attribute);
+            }),
+        );
+    }
+
+    /**
+     * @template TT of Model
+     * @template T of Builder<TT>
+     *
+     * @param \Closure(mixed, string): T $callback
+     * @param \Closure(T, mixed, string): bool|null $each
+     *
+     * @return $this
+     */
+    public function retrieveByKey(\Closure $callback, \Closure|null $each = null): static
+    {
+        return $this->add(
+            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
+                $builder = $callback($value, $attribute);
+
+                $builder->whereKey($value);
+
+                $exists = $builder->toBase()->exists();
+
+                if (!$exists) {
+                    return false;
+                }
+
+                if ($each === null) {
+                    return true;
+                }
+
+                return $each($builder, $value, $attribute);
+            }),
+        );
+    }
+
+    /**
+     * @template TT of Model
+     * @template T of Builder<TT>
+     *
+     * @param \Closure(mixed, string): T $callback
+     * @param \Closure(T, mixed, string): bool|null $each
+     *
+     * @return $this
+     */
+    public function retrieveByRouteKey(\Closure $callback, \Closure|null $each = null): static
+    {
+        return $this->add(
+            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
+                $builder = $callback($value, $attribute);
+
+                $builder->where($builder->qualifyColumn(Assert::instance($builder->getModel(), Model::class)->getRouteKeyName()), '=', $value);
+
+                $exists = $builder->toBase()->exists();
+
+                if (!$exists) {
+                    return false;
+                }
+
+                if ($each === null) {
+                    return true;
+                }
+
+                return $each($builder, $value, $attribute);
+            }),
+        );
+    }
+
+    /**
+     * @template TT of Model
+     * @template T of Builder<TT>
+     *
+     * @param \Closure(mixed, string): T $callback
+     * @param \Closure(T, mixed, string): bool|null $each
+     *
+     * @return $this
+     */
+    public function retrieveByScope(\Closure $callback, \Closure|null $each = null): static
+    {
+        return $this->add(
+            new CallbackRule(static function (string $attribute, mixed $value) use ($callback, $each): bool {
+                $builder = $callback($value, $attribute);
+
+                $exists = $builder->toBase()->exists();
+
+                if (!$exists) {
+                    return false;
+                }
+
+                if ($each === null) {
+                    return true;
+                }
+
+                return $each($builder, $value, $attribute);
             }),
         );
     }

@@ -27,10 +27,6 @@ trait SizeValidityTrait
      */
     public function between(int $min, int $max): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->min = $min;
         $this->max = $max;
 
@@ -74,10 +70,6 @@ trait SizeValidityTrait
      */
     public function max(int $max): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->max = $max;
 
         return $this;
@@ -88,10 +80,6 @@ trait SizeValidityTrait
      */
     public function min(int $min): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->min = $min;
 
         return $this;
@@ -102,10 +90,6 @@ trait SizeValidityTrait
      */
     public function size(int $size): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->min = $size;
         $this->max = $size;
 

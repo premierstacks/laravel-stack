@@ -131,6 +131,22 @@ class IntegerLimits
         return $this->between($min, $max);
     }
 
+    public function positive(int|null $max = null, int|null $min = null): IntegerValidity
+    {
+        $min ??= 1;
+        $max ??= static::UNSIGNED_BIG_INT_MAX;
+
+        if ($min < 1) {
+            throw new \InvalidArgumentException(Errorf::invalidArgument('min', $min, '1'));
+        }
+
+        if ($max > static::UNSIGNED_BIG_INT_MAX) {
+            throw new \InvalidArgumentException(Errorf::invalidArgument('max', $max, 'unsigned big int'));
+        }
+
+        return $this->between($min, $max);
+    }
+
     public function size(int $size): IntegerValidity
     {
         return $this->validity->size($size);

@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Premierstacks\LaravelStack\Validation\Rules;
 
 use Illuminate\Validation\Validator;
-use Premierstacks\LaravelStack\Config\Conf;
 use Premierstacks\LaravelStack\Container\Resolver;
 use Premierstacks\PhpStack\Encoding\Json;
 use Premierstacks\PhpStack\Mixed\Assert;
@@ -36,10 +35,6 @@ class RecaptchaRule extends ValidationRule
     #[\Override]
     public function passes(string $attribute, mixed $value, Validator $validator, \Closure $fail): array|bool|null
     {
-        if (Conf::inject()->isAppEnv(['local', 'testing'])) {
-            return true;
-        }
-
         $response = Assert::array(Json::decode(
             Resolver::httpClientFactory()->createPendingRequest()->acceptJson()->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
                 'secret' => $this->secret,

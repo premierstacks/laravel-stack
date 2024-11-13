@@ -81,6 +81,8 @@ class Verification extends MixedModel implements VerificationInterface
 
     protected $hidden = ['token'];
 
+    public static bool $stub = false;
+
     /**
      * @return $this
      */
@@ -347,7 +349,7 @@ class Verification extends MixedModel implements VerificationInterface
 
     public function validateToken(string $token): bool
     {
-        if (Conf::inject()->isAppEnv(['local', 'testing', 'development']) && \hash_equals($token, \str_repeat($token[0], \mb_strlen($token)))) {
+        if (static::$stub && \hash_equals($token, \str_repeat($token[0], \mb_strlen($token)))) {
             return true;
         }
 

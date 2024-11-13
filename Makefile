@@ -43,7 +43,7 @@ clean:
 commit: fix check
 
 .PHONY: coverage
-coverage: test
+coverage: test ./.phpunit.coverage/html
 	${MAKE_PHP} -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
 
 .PHONY: development

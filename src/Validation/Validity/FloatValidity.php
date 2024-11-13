@@ -31,10 +31,6 @@ class FloatValidity extends MixedValidity
      */
     public function between(float $min, float $max): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->min = $min;
         $this->max = $max;
 
@@ -92,10 +88,6 @@ class FloatValidity extends MixedValidity
      */
     public function max(float $max): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->max = $max;
 
         return $this;
@@ -106,10 +98,6 @@ class FloatValidity extends MixedValidity
      */
     public function min(float $min): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->min = $min;
 
         return $this;
@@ -128,10 +116,6 @@ class FloatValidity extends MixedValidity
      */
     public function size(float $size): static
     {
-        if ($this->skip > 0) {
-            return $this->unskip();
-        }
-
         $this->min = $size;
         $this->max = $size;
 

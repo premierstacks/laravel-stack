@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\Validation\Validity;
 
-use Premierstacks\LaravelStack\Config\Conf;
 use Premierstacks\LaravelStack\Validation\Rules\BytesBetweenRule;
 use Premierstacks\LaravelStack\Validation\Rules\BytesMaxRule;
 use Premierstacks\LaravelStack\Validation\Rules\BytesMinRule;
@@ -38,10 +37,6 @@ class StringValidity extends MixedValidity
      */
     public function activeUrl(): static
     {
-        if (Conf::inject()->isAppEnv(['testing'])) {
-            return $this->add('url');
-        }
-
         return $this->add('active_url');
     }
 
@@ -134,10 +129,6 @@ class StringValidity extends MixedValidity
      */
     public function email(bool $filterUnicode = true, bool $strict = true, bool $dns = true, bool $rfc = false, bool $spoof = true, bool $filter = false): static
     {
-        if (Conf::inject()->isAppEnv(['testing'])) {
-            return $this->add('email');
-        }
-
         $options = [];
 
         if ($filter) {

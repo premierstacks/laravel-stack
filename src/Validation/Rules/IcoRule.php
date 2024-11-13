@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Premierstacks\LaravelStack\Validation\Rules;
 
 use Illuminate\Validation\Validator;
-use Premierstacks\LaravelStack\Config\Conf;
 
 class IcoRule extends ValidationRule
 {
@@ -41,10 +40,6 @@ class IcoRule extends ValidationRule
     {
         if (!\is_string($value)) {
             return false;
-        }
-
-        if (Conf::inject()->isAppEnv(['testing'])) {
-            return true;
         }
 
         if (\preg_match('/^\d{8}$/', $value) !== 1) {
