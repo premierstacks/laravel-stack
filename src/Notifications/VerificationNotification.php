@@ -34,7 +34,7 @@ class VerificationNotification extends Notification implements ShouldQueueContra
     use InjectTrait;
     use Queueable;
 
-    public function __construct(public VerificationInterface $verification, public string $url, public string $email)
+    public function __construct(public VerificationInterface $verification, public string $url, public string $email, public string $token)
     {
         $this->afterCommit();
     }
@@ -69,7 +69,7 @@ class VerificationNotification extends Notification implements ShouldQueueContra
         $trans = $this->getTrans();
         $class = static::class;
 
-        $variant = \mb_strlen($this->verification->getToken() ?? $this->verification->getHash()) > 10 ? 'token' : 'code';
+        $variant = \mb_strlen($this->token) > 10 ? 'token' : 'code';
 
         return (new MailMessage())
             ->subject($trans->string("notifications.{$class}.{$variant}.subject"))
@@ -94,7 +94,7 @@ class VerificationNotification extends Notification implements ShouldQueueContra
     {
         return (string) Uri::newFromString($this->url)->mergeQuery([
             'verification_id' => $this->verification->getVerificationId(),
-            'token' => $this->verification->getHash(),
+            'token' => $this->token,
             '_accept_language' => $this->locale,
         ]);
     }

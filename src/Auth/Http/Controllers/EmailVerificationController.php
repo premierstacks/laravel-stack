@@ -23,16 +23,20 @@ namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Notification;
 use Premierstacks\LaravelStack\Notifications\VerificationNotification;
+use Premierstacks\PhpStack\Mixed\Assert;
 use Premierstacks\PhpStack\Mixed\Filter;
 
 class EmailVerificationController extends AbstractVerificationController
 {
     public function createNotification(): Notification
     {
+        $verification = $this->createVerification();
+
         return VerificationNotification::inject([
-            'verification' => $this->createVerification(),
+            'verification' => $verification,
             'url' => $this->getUrl(),
             'email' => $this->getEmail(),
+            'token' => Assert::string($verification->getToken()),
         ])->locale($this->getLocale());
     }
 

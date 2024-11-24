@@ -134,7 +134,7 @@ class Migrator
             $table->dateTime('expires_at');
             $table->dateTime('verified_at')->nullable();
             $table->string('verification_id');
-            $table->string('token');
+            $table->string('hash');
             $table->integer('uses');
             $table->string('action');
             $table->string('pair');
