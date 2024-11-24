@@ -29,8 +29,8 @@ use Premierstacks\LaravelStack\Auth\Models\UnlimitedToken;
 use Premierstacks\LaravelStack\Container\Resolver;
 use Premierstacks\PhpStack\JsonApi\JsonApiRelationship;
 use Premierstacks\PhpStack\JsonApi\JsonApiRelationshipInterface;
+use Premierstacks\PhpStack\JsonApi\JsonApiResourceIdentifierInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceInterface;
-use Premierstacks\PhpStack\JsonApi\NullJsonApiResource;
 use Premierstacks\PhpStack\Types\Strings;
 
 class AuthJsonApiResource extends AuthenticatableJsonApiResource
@@ -40,10 +40,13 @@ class AuthJsonApiResource extends AuthenticatableJsonApiResource
         parent::__construct($authenticatable);
     }
 
-    public function createUnlimitedTokenJsonApiResource(UnlimitedToken|null $unlimitedToken): JsonApiResourceInterface
+    /**
+     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
+     */
+    public function createUnlimitedTokenJsonApiResource(UnlimitedToken|null $unlimitedToken): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
     {
         if ($unlimitedToken === null) {
-            return new NullJsonApiResource();
+            return null;
         }
 
         return UnlimitedTokenJsonApiResource::inject(['unlimitedToken' => $unlimitedToken]);

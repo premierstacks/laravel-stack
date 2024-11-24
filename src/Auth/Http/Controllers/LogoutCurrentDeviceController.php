@@ -48,7 +48,6 @@ use Premierstacks\PhpStack\JsonApi\JsonApiDocument;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocumentInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceIdentifierInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceInterface;
-use Premierstacks\PhpStack\JsonApi\NullJsonApiResource;
 use Premierstacks\PhpStack\Mixed\Assert;
 use Premierstacks\PhpStack\Mixed\Filter;
 
@@ -66,7 +65,11 @@ class LogoutCurrentDeviceController
 
     public function authorizeMultifactor(): void
     {
-        if (!$this->getVerificator()->decrement($this->getSessionId(), $this->getVerificationContext())) {
+        $verificator = $this->getVerificator();
+
+        $verification = $verificator->retrieveActive($this->getSessionId(), $this->getVerificationContext());
+
+        if ($verification === null || !$verificator->decrementUses($verification)) {
             $this->getThrower()->failures(['session_id'], 'Confirmed')->throw(403);
         }
     }
@@ -117,11 +120,11 @@ class LogoutCurrentDeviceController
     }
 
     /**
-     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>
+     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
      */
-    public function getJsonApiData(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable
+    public function getJsonApiData(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
     {
-        return new NullJsonApiResource();
+        return null;
     }
 
     public function getJsonApiDocument(): JsonApiDocumentInterface

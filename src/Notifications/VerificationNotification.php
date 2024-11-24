@@ -69,13 +69,14 @@ class VerificationNotification extends Notification implements ShouldQueueContra
         $trans = $this->getTrans();
         $class = static::class;
 
-        $variant = \mb_strlen($this->verification->getToken()) > 10 ? 'token' : 'code';
+        $variant = \mb_strlen($this->verification->getToken() ?? $this->verification->getHash()) > 10 ? 'token' : 'code';
 
         return (new MailMessage())
             ->subject($trans->string("notifications.{$class}.{$variant}.subject"))
             ->line($trans->string("notifications.{$class}.{$variant}.line_1"))
             ->line($trans->string("notifications.{$class}.{$variant}.line_2"))
             ->line($trans->string("notifications.{$class}.{$variant}.line_3", ['action' => $this->getAction()]))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_4", ['pair' => $this->verification->getPair()]))
             ->action($trans->string("notifications.{$class}.{$variant}.button"), $this->getUrl($notifiable))
             ->line($trans->string("notifications.{$class}.{$variant}.line_expiration", ['minutes' => (string) $this->verification->getExpiresAt()->diffInMinutes()]))
             ->line($trans->string("notifications.{$class}.{$variant}.line_not_you"));
@@ -93,7 +94,7 @@ class VerificationNotification extends Notification implements ShouldQueueContra
     {
         return (string) Uri::newFromString($this->url)->mergeQuery([
             'verification_id' => $this->verification->getVerificationId(),
-            'token' => $this->verification->getToken(),
+            'token' => $this->verification->getHash(),
             '_accept_language' => $this->locale,
         ]);
     }

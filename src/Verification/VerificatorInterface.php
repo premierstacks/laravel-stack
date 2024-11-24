@@ -24,24 +24,19 @@ use Illuminate\Support\Carbon;
 
 interface VerificatorInterface
 {
-    /**
-     * @param iterable<array-key, mixed> $context
-     */
-    public function check(string $sessionId, iterable $context): bool;
-
-    public function complete(string $verificationId): bool;
+    public function complete(VerificationInterface $verification): bool;
 
     /**
      * @param iterable<array-key, mixed> $context
      */
-    public function createVerification(string $sessionId, string $verificationId, string $token, string $pair, iterable $context, string $action, Carbon $expiresAt, int $duration, int $uses, Carbon|null $verifiedAt): VerificationInterface;
+    public function create(string $sessionId, string $verificationId, string $token, string $pair, iterable $context, string $action, Carbon $expiresAt, int $duration, int $uses, Carbon|null $verifiedAt): VerificationInterface;
+
+    public function decrementUses(VerificationInterface $verification): bool;
 
     /**
      * @param iterable<array-key, mixed> $context
      */
-    public function decrement(string $sessionId, iterable $context): bool;
+    public function retrieveActive(string $sessionId, iterable $context): VerificationInterface|null;
 
-    public function retrieve(string $verificationId): VerificationInterface|null;
-
-    public function validate(string $verificationId, string $token): bool;
+    public function retrieveByVerificationId(string $verificationId): VerificationInterface|null;
 }

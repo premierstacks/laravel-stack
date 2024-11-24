@@ -65,7 +65,11 @@ class LoginController
 
     public function authorizeMultifactor(): void
     {
-        if (!$this->getVerificator()->decrement($this->getSessionId(), $this->getVerificationContext())) {
+        $verificator = $this->getVerificator();
+
+        $verification = $verificator->retrieveActive($this->getSessionId(), $this->getVerificationContext());
+
+        if ($verification === null || !$verificator->decrementUses($verification)) {
             $this->getThrower()->failures(['session_id'], 'Confirmed')->throw(403);
         }
     }
@@ -77,7 +81,7 @@ class LoginController
         }
     }
 
-    public function createAuthJsonApiResource(Authenticatable $authenticatable): JsonApiResourceInterface
+    public function createAuthenticatableJsonApiResource(Authenticatable $authenticatable): JsonApiResourceInterface
     {
         return AuthJsonApiResource::inject(['authenticatable' => $authenticatable]);
     }
@@ -127,7 +131,7 @@ class LoginController
      */
     public function getJsonApiData(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable
     {
-        return $this->createAuthJsonApiResource($this->retrieveAuthenticatable());
+        return $this->createAuthenticatableJsonApiResource($this->retrieveAuthenticatable());
     }
 
     public function getJsonApiDocument(): JsonApiDocumentInterface

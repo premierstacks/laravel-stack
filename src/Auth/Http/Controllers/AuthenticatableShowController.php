@@ -32,17 +32,23 @@ use Premierstacks\PhpStack\JsonApi\JsonApiDocument;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocumentInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceIdentifierInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceInterface;
-use Premierstacks\PhpStack\JsonApi\NullJsonApiResource;
 
 class AuthenticatableShowController
 {
-    public function createAuthJsonApiResource(Authenticatable|null $authenticatable): JsonApiResourceInterface
+    /**
+     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
+     */
+    public function createAuthenticatableJsonApiResource(Authenticatable $authenticatable): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
     {
-        if ($authenticatable === null) {
-            return new NullJsonApiResource();
-        }
-
         return AuthJsonApiResource::inject(['authenticatable' => $authenticatable]);
+    }
+
+    /**
+     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
+     */
+    public function createGuestJsonApiResource(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
+    {
+        return null;
     }
 
     public function getAuthenticatable(): Authenticatable|null
@@ -51,11 +57,17 @@ class AuthenticatableShowController
     }
 
     /**
-     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>
+     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
      */
-    public function getJsonApiData(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable
+    public function getJsonApiData(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
     {
-        return $this->createAuthJsonApiResource($this->getAuthenticatable());
+        $authenticatable = $this->getAuthenticatable();
+
+        if ($authenticatable !== null) {
+            return $this->createAuthenticatableJsonApiResource($authenticatable);
+        }
+
+        return $this->createGuestJsonApiResource();
     }
 
     public function getJsonApiDocument(): JsonApiDocumentInterface

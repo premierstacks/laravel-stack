@@ -65,7 +65,11 @@ class LogoutOtherDevicesController
 
     public function authorizeMultifactor(): void
     {
-        if (!$this->getVerificator()->decrement($this->getSessionId(), $this->getVerificationContext())) {
+        $verificator = $this->getVerificator();
+
+        $verification = $verificator->retrieveActive($this->getSessionId(), $this->getVerificationContext());
+
+        if ($verification === null || !$verificator->decrementUses($verification)) {
             $this->getThrower()->failures(['session_id'], 'Confirmed')->throw(403);
         }
     }

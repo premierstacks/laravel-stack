@@ -29,7 +29,7 @@ use Premierstacks\PhpStack\Mixed\Assert;
 
 class Verification extends MixedModel implements VerificationInterface
 {
-    public string|null $rawToken = null;
+    public string|null $token = null;
 
     /**
      * @var array<array-key, mixed>
@@ -42,7 +42,7 @@ class Verification extends MixedModel implements VerificationInterface
         'expires_at' => null,
         'verified_at' => null,
         'verification_id' => null,
-        'token' => null,
+        'hash' => null,
         'uses' => null,
         'action' => null,
         'pair' => null,
@@ -60,7 +60,7 @@ class Verification extends MixedModel implements VerificationInterface
         'expires_at' => 'datetime',
         'verified_at' => 'datetime',
         'verification_id' => 'string',
-        'token' => 'string',
+        'hash' => 'string',
         'uses' => 'int',
         'action' => 'string',
         'pair' => 'string',
@@ -73,13 +73,13 @@ class Verification extends MixedModel implements VerificationInterface
         'expires_at',
         'verified_at',
         'verification_id',
-        'token',
+        'hash',
         'uses',
         'action',
         'pair',
     ];
 
-    protected $hidden = ['token'];
+    protected $hidden = ['hash'];
 
     public static bool $stub = false;
 
@@ -94,6 +94,12 @@ class Verification extends MixedModel implements VerificationInterface
         ]);
     }
 
+    #[\Override]
+    public function complete(): bool
+    {
+        return $this->asVerified()->mustSave();
+    }
+
     /**
      * @param iterable<array-key, mixed> $context
      */
@@ -106,6 +112,7 @@ class Verification extends MixedModel implements VerificationInterface
         return $this->hash(\serialize($array));
     }
 
+    #[\Override]
     public function decrementUses(): bool
     {
         return $this->decrement('uses') > 0;
@@ -136,14 +143,15 @@ class Verification extends MixedModel implements VerificationInterface
     }
 
     #[\Override]
+    public function getHash(): string
+    {
+        return Assert::string($this->getAttribute('hash'));
+    }
+
+    #[\Override]
     public function getPair(): string
     {
         return Assert::string($this->getAttribute('pair'));
-    }
-
-    public function getRawToken(): string|null
-    {
-        return $this->rawToken;
     }
 
     #[\Override]
@@ -153,9 +161,9 @@ class Verification extends MixedModel implements VerificationInterface
     }
 
     #[\Override]
-    public function getToken(): string
+    public function getToken(): string|null
     {
-        return Assert::string($this->getAttribute('token'));
+        return $this->token;
     }
 
     #[\Override]
@@ -197,6 +205,19 @@ class Verification extends MixedModel implements VerificationInterface
     public function isReady(): bool
     {
         return $this->getVerifiedAt() === null && $this->getExpiresAt()->isFuture();
+    }
+
+    /**
+     * @param iterable<array-key, mixed> $context
+     */
+    public function retrieveActive(string $sessionId, iterable $context): static|null
+    {
+        $query = $this->newQuery();
+
+        $this->scopeActive($query);
+        $this->scopeContext($query, $sessionId, $context);
+
+        return Assert::nullableInstance($query->first(), static::class);
     }
 
     public function retrieveByVerificationId(string $verificationId): static|null
@@ -278,21 +299,23 @@ class Verification extends MixedModel implements VerificationInterface
         ]);
     }
 
+    /**
+     * @return $this
+     */
+    public function setHash(string $token): static
+    {
+        $this->setToken($token);
+
+        return $this->fill([
+            'hash' => $this->hash($token),
+        ]);
+    }
+
     public function setPair(string $pair): static
     {
         return $this->fill([
             'pair' => $pair,
         ]);
-    }
-
-    /**
-     * @return $this
-     */
-    public function setRawToken(string|null $rawToken): static
-    {
-        $this->rawToken = $rawToken;
-
-        return $this;
     }
 
     /**
@@ -308,13 +331,11 @@ class Verification extends MixedModel implements VerificationInterface
     /**
      * @return $this
      */
-    public function setToken(string $token): static
+    public function setToken(string|null $token): static
     {
-        $this->setRawToken($token);
+        $this->token = $token;
 
-        return $this->fill([
-            'token' => $this->hash($token),
-        ]);
+        return $this;
     }
 
     /**
@@ -347,12 +368,13 @@ class Verification extends MixedModel implements VerificationInterface
         ]);
     }
 
+    #[\Override]
     public function validateToken(string $token): bool
     {
         if (static::$stub && \hash_equals($token, \str_repeat($token[0], \mb_strlen($token)))) {
             return true;
         }
 
-        return \hash_equals($this->getToken(), $this->hash($token));
+        return \hash_equals($this->getHash(), $this->hash($token));
     }
 }

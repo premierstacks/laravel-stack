@@ -30,6 +30,9 @@ class PaginatorJsonApiMeta extends JsonApiMeta
 {
     use InjectTrait;
 
+    /**
+     * @param Paginator<array-key, mixed> $paginator
+     */
     public function __construct(public Paginator $paginator)
     {
         parent::__construct();

@@ -24,6 +24,10 @@ use Illuminate\Support\Carbon;
 
 interface VerificationInterface
 {
+    public function complete(): bool;
+
+    public function decrementUses(): bool;
+
     public function getAction(): string;
 
     public function getContext(): string;
@@ -32,11 +36,13 @@ interface VerificationInterface
 
     public function getExpiresAt(): Carbon;
 
+    public function getHash(): string;
+
     public function getPair(): string;
 
     public function getSessionId(): string;
 
-    public function getToken(): string;
+    public function getToken(): string|null;
 
     public function getUses(): int;
 
@@ -49,4 +55,6 @@ interface VerificationInterface
     public function isCompleted(): bool;
 
     public function isReady(): bool;
+
+    public function validateToken(string $token): bool;
 }

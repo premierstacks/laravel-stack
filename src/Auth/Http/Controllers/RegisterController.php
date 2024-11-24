@@ -57,12 +57,14 @@ class RegisterController
     {
         $credentalsToAuthorize = \iterator_to_array($this->getCredentialsToAuthorize());
 
+        $verificator = $this->getVerificator();
+
         foreach ($credentalsToAuthorize as $credentials) {
             if ($credentials === []) {
                 continue;
             }
 
-            if (!$this->getVerificator()->check($this->getSessionId(), $this->createCredentialsAuthorizationContext($credentials))) {
+            if ($verificator->retrieveActive($this->getSessionId(), $this->createCredentialsAuthorizationContext($credentials)) === null) {
                 $this->getThrower()->failures(\array_keys($credentials), 'Confirmed')->throw(403);
             }
         }
@@ -72,15 +74,16 @@ class RegisterController
                 continue;
             }
 
-            if (!$this->getVerificator()->decrement($this->getSessionId(), $this->createCredentialsAuthorizationContext($credentials))) {
+            $verification = $verificator->retrieveActive($this->getSessionId(), $this->createCredentialsAuthorizationContext($credentials));
+
+            if ($verification === null) {
+                $this->getThrower()->failures(\array_keys($credentials), 'Confirmed')->throw(403);
+            }
+
+            if (!$verificator->decrementUses($verification)) {
                 $this->getThrower()->failures(\array_keys($credentials), 'Confirmed')->throw(403);
             }
         }
-    }
-
-    public function createAuthJsonApiResource(Authenticatable $authenticatable): JsonApiResourceInterface
-    {
-        return AuthJsonApiResource::inject(['authenticatable' => $authenticatable]);
     }
 
     public function createAuthenticatable(): Authenticatable
@@ -102,6 +105,11 @@ class RegisterController
 
             return $authenticatable;
         });
+    }
+
+    public function createAuthenticatableJsonApiResource(Authenticatable $authenticatable): JsonApiResourceInterface
+    {
+        return AuthJsonApiResource::inject(['authenticatable' => $authenticatable]);
     }
 
     /**
@@ -171,7 +179,7 @@ class RegisterController
      */
     public function getJsonApiData(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable
     {
-        return $this->createAuthJsonApiResource($this->createAuthenticatable());
+        return $this->createAuthenticatableJsonApiResource($this->createAuthenticatable());
     }
 
     public function getJsonApiDocument(): JsonApiDocumentInterface

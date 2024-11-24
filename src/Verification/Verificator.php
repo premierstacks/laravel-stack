@@ -28,36 +28,13 @@ class Verificator implements VerificatorInterface
     use InjectTrait;
 
     #[\Override]
-    public function check(string $sessionId, iterable $context): bool
+    public function complete(VerificationInterface $verification): bool
     {
-        $verification = $this->newVerification();
-
-        $query = $verification->newQuery();
-
-        $verification->scopeActive($query);
-        $verification->scopeContext($query, $sessionId, $context);
-
-        return $query->getQuery()->exists();
+        return $verification->complete();
     }
 
     #[\Override]
-    public function complete(string $verificationId): bool
-    {
-        $verification = $this->retrieve($verificationId);
-
-        if (!$verification instanceof Verification) {
-            return false;
-        }
-
-        if ($verification->isCompleted()) {
-            return true;
-        }
-
-        return $verification->asVerified()->mustSave();
-    }
-
-    #[\Override]
-    public function createVerification(
+    public function create(
         string $sessionId,
         string $verificationId,
         string $token,
@@ -88,21 +65,8 @@ class Verificator implements VerificatorInterface
     }
 
     #[\Override]
-    public function decrement(string $sessionId, iterable $context): bool
+    public function decrementUses(VerificationInterface $verification): bool
     {
-        $verification = $this->newVerification();
-
-        $query = $verification->newQuery();
-
-        $verification->scopeActive($query);
-        $verification->scopeContext($query, $sessionId, $context);
-
-        $verification = $query->first();
-
-        if (!$verification instanceof Verification) {
-            return false;
-        }
-
         return $verification->decrementUses();
     }
 
@@ -112,24 +76,14 @@ class Verificator implements VerificatorInterface
     }
 
     #[\Override]
-    public function retrieve(string $verificationId): VerificationInterface|null
+    public function retrieveActive(string $sessionId, iterable $context): VerificationInterface|null
     {
-        return $this->newVerification()->retrieveByVerificationId($verificationId);
+        return $this->newVerification()->retrieveActive($sessionId, $context);
     }
 
     #[\Override]
-    public function validate(string $verificationId, string $token): bool
+    public function retrieveByVerificationId(string $verificationId): VerificationInterface|null
     {
-        $verification = $this->retrieve($verificationId);
-
-        if (!$verification instanceof Verification) {
-            return false;
-        }
-
-        if (!$verification->isReady()) {
-            return false;
-        }
-
-        return $verification->validateToken($token);
+        return $this->newVerification()->retrieveByVerificationId($verificationId);
     }
 }

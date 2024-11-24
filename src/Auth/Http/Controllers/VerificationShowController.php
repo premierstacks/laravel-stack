@@ -37,11 +37,19 @@ use Premierstacks\PhpStack\JsonApi\JsonApiDocument;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocumentInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceIdentifierInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceInterface;
-use Premierstacks\PhpStack\JsonApi\NullJsonApiResource;
 use Premierstacks\PhpStack\Mixed\Filter;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VerificationShowController
 {
+    /**
+     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
+     */
+    public function createNotFoundJsonApiResource(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
+    {
+        throw new NotFoundHttpException();
+    }
+
     /**
      * @param array<array-key, mixed> $rules
      */
@@ -50,21 +58,26 @@ class VerificationShowController
         return $this->getValidationFactory()->make($this->getValidationData(), $rules, $this->getValidationMessages(), $this->getValidationAttributes());
     }
 
-    public function createVerificationJsonApiResource(VerificationInterface|null $verification): JsonApiResourceInterface
+    /**
+     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
+     */
+    public function createVerificationJsonApiResource(VerificationInterface $verification): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
     {
-        if ($verification === null) {
-            return new NullJsonApiResource();
-        }
-
         return VerificationJsonApiResource::inject(['verification' => $verification]);
     }
 
     /**
-     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>
+     * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
      */
-    public function getJsonApiData(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable
+    public function getJsonApiData(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
     {
-        return $this->createVerificationJsonApiResource($this->getVerification());
+        $verification = $this->getVerification();
+
+        if ($verification === null) {
+            return $this->createNotFoundJsonApiResource();
+        }
+
+        return $this->createVerificationJsonApiResource($verification);
     }
 
     public function getJsonApiDocument(): JsonApiDocumentInterface
@@ -118,7 +131,7 @@ class VerificationShowController
 
     public function getVerification(): VerificationInterface|null
     {
-        return $this->getVerificator()->retrieve($this->getVerificationId());
+        return $this->getVerificator()->retrieveByVerificationId($this->getVerificationId());
     }
 
     public function getVerificationId(): string

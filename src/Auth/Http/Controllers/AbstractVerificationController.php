@@ -57,7 +57,7 @@ abstract class AbstractVerificationController
 
     public function createVerification(): VerificationInterface
     {
-        return \once(fn(): VerificationInterface => $this->getVerificator()->createVerification($this->getSessionId(), $this->getVerificationId(), $this->getToken(), $this->getPair(), $this->getContext(), $this->getAction(), $this->getExpiresAt(), $this->getDuration(), $this->getUses(), null));
+        return \once(fn(): VerificationInterface => $this->getVerificator()->create($this->getSessionId(), $this->getVerificationId(), $this->getToken(), $this->getPair(), $this->getContext(), $this->getAction(), $this->getExpiresAt(), $this->getDuration(), $this->getUses(), null));
     }
 
     public function createVerificationJsonApiResource(VerificationInterface $verification): JsonApiResourceInterface

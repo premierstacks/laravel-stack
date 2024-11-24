@@ -44,12 +44,22 @@ class VerificationCompleteController
 {
     public function complete(): void
     {
-        if (!$this->getVerificator()->validate($this->getVerificationId(), $this->getToken())) {
-            $this->getThrower()->failures(['verification_id', 'token'], 'Exists')->throw(404);
+        $verification = $this->getVerification();
+
+        if ($verification->isCompleted()) {
+            $this->getThrower()->failures(['verification_id'], 'Can')->throw(409);
         }
 
-        if (!$this->getVerificator()->complete($this->getVerificationId())) {
-            $this->getThrower()->failures(['verification_id', 'token'], 'Exists')->throw(404);
+        if (!$verification->isReady()) {
+            $this->getThrower()->failures(['verification_id'], 'Can')->throw(403);
+        }
+
+        if (!$verification->validateToken($this->getToken())) {
+            $this->getThrower()->failures(['token'], 'Exists')->throw(422);
+        }
+
+        if (!$this->getVerificator()->complete($verification)) {
+            $this->getThrower()->failures(['token'], 'Exists')->throw(404);
         }
     }
 
@@ -137,7 +147,7 @@ class VerificationCompleteController
 
     public function getVerification(): VerificationInterface
     {
-        return $this->getVerificator()->retrieve($this->getVerificationId()) ?? $this->getThrower()->failures(['verification_id'], 'Exists')->throw(404);
+        return $this->getVerificator()->retrieveByVerificationId($this->getVerificationId()) ?? $this->getThrower()->failures(['verification_id'], 'Exists')->throw(404);
     }
 
     public function getVerificationId(): string
