@@ -55,23 +55,9 @@ class AuthenticatableJsonApiResource extends JsonApiResource
      */
     public function getAuthenticatableAttributes(): iterable
     {
-        yield 'auth_identifier' => (string) Assert::arrayKey($this->authenticatable->getAuthIdentifier());
-
         if ($this->authenticatable instanceof HasLocalePreference) {
             yield 'preferred_locale' => $this->authenticatable->preferredLocale();
         }
-    }
-
-    /**
-     * @return iterable<array-key, mixed>
-     */
-    public function getAuthenticatableMeta(): iterable
-    {
-        $gate = $this->getGate()->forUser($this->authenticatable);
-
-        yield 'login_password_authorization' => $gate->has('login_password_authorization') ? $gate->allows('login_password_authorization') : ($gate->has('password_authorization') ? $gate->allows('password_authorization') : true);
-
-        yield 'login_multifactor_authorization' => $gate->has('login_multifactor_authorization') ? $gate->allows('login_multifactor_authorization') : ($gate->has('multifactor_authorization') ? $gate->allows('multifactor_authorization') : true);
     }
 
     public function getGate(): Gate
@@ -102,8 +88,6 @@ class AuthenticatableJsonApiResource extends JsonApiResource
     public function getMeta(): iterable
     {
         yield from parent::getMeta() ?? [];
-
-        yield from $this->getAuthenticatableMeta();
     }
 
     #[\Override]

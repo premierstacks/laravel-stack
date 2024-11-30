@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -54,17 +55,43 @@ use Premierstacks\PhpStack\Mixed\Filter;
 
 class PasswordResetController
 {
-    public function authorize(): void
+    public function authenticate(): void
     {
-        $gate = $this->getGate()->forUser($this->retrieveAuthenticatable());
-        $scope = $this->getScope();
+        $authenticatable = $this->getAuthenticatable();
 
-        if ($gate->has($scope)) {
-            $gate->authorize($scope);
+        $ability = $this->getAuthenticateAbility();
+
+        if ($ability === true) {
+            return;
         }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($authenticatable);
+
+        $gate->authorize($ability);
     }
 
-    public function authorizeMultifactor(): void
+    public function authorize(): void
+    {
+        $ability = $this->getAuthorizeAbility();
+
+        if ($ability === true) {
+            return;
+        }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
+
+        $gate->authorize($ability, $this->retrieveAuthenticatable());
+    }
+
+    public function authorizeVerificator(): void
     {
         $verificator = $this->getVerificator();
 
@@ -88,9 +115,36 @@ class PasswordResetController
         return Resolver::authManager();
     }
 
+    public function getAuthenticatable(): Authenticatable|null
+    {
+        return \once(static fn(): Authenticatable|null => Resolver::authenticatableContract());
+    }
+
     public function getAuthenticatableValidity(): AuthenticatableValidity
     {
         return AuthenticatableValidity::inject();
+    }
+
+    public function getAuthenticateAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authenticate_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
+    }
+
+    public function getAuthorizeAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authorize_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     public function getEmail(): string
@@ -131,6 +185,17 @@ class PasswordResetController
     public function getJsonApiResponseFactory(): JsonApiResponseFactory
     {
         return JsonApiResponseFactory::inject();
+    }
+
+    public function getLoginAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['login_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     public function getPassword(): string
@@ -275,9 +340,10 @@ class PasswordResetController
 
     public function handle(): JsonResponse|RedirectResponse|Response
     {
+        $this->authenticate();
         $this->authorize();
 
-        $this->authorizeMultifactor();
+        $this->authorizeVerificator();
 
         $this->updatePassword();
 
@@ -344,13 +410,15 @@ class PasswordResetController
 
     public function shouldLogin(): bool
     {
-        $gate = $this->getGate()->forUser($this->retrieveAuthenticatable());
+        $ability = $this->getLoginAbility();
 
-        if ($gate->has('login')) {
-            return $gate->allows('login');
+        if (\is_bool($ability)) {
+            return $ability;
         }
 
-        return true;
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
+
+        return $gate->allows($ability, $this->retrieveAuthenticatable());
     }
 
     public function updatePassword(): void

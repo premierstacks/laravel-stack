@@ -20,6 +20,8 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
@@ -27,20 +29,44 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Route;
+use Illuminate\Routing\Router;
 use Illuminate\Validation\Factory;
 use Illuminate\Validation\Validator;
 use Premierstacks\LaravelStack\Auth\Http\JsonApi\AuthenticatableJsonApiResource;
 use Premierstacks\LaravelStack\Auth\Http\Validation\AuthenticatableValidity;
 use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Exceptions\Thrower;
 use Premierstacks\LaravelStack\JsonApi\JsonApiResponseFactory;
+use Premierstacks\LaravelStack\Translation\Trans;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocument;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocumentInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceIdentifierInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceInterface;
+use Premierstacks\PhpStack\Mixed\Assert;
 use Premierstacks\PhpStack\Mixed\Filter;
 
 class RetrieveAuthenticatableController
 {
+    public function authenticate(): void
+    {
+        $authenticatable = $this->getAuthenticatable();
+
+        $ability = $this->getAuthenticateAbility();
+
+        if ($ability === true) {
+            return;
+        }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($authenticatable);
+
+        $gate->authorize($ability);
+    }
+
     /**
      * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
      */
@@ -54,7 +80,9 @@ class RetrieveAuthenticatableController
      */
     public function createGuestJsonApiResource(): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
     {
-        return null;
+        $retrieveCredentials = \iterator_to_array($this->getRetrieveCredentials());
+
+        $this->getThrower()->errors(\array_keys(\array_reduce($retrieveCredentials, 'array_merge', [])), $this->getTrans()->string('auth.failed'))->throw(404);
     }
 
     /**
@@ -70,9 +98,25 @@ class RetrieveAuthenticatableController
         return Resolver::authManager();
     }
 
+    public function getAuthenticatable(): Authenticatable|null
+    {
+        return \once(static fn(): Authenticatable|null => Resolver::authenticatableContract());
+    }
+
     public function getAuthenticatableValidity(): AuthenticatableValidity
     {
         return AuthenticatableValidity::inject();
+    }
+
+    public function getAuthenticateAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authenticate_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     public function getEmail(): string
@@ -80,6 +124,11 @@ class RetrieveAuthenticatableController
         return Filter::string($this->createValidator([
             'email' => $this->getAuthenticatableValidity()->email()->required()->compile(),
         ])->validate()['email'] ?? null);
+    }
+
+    public function getGate(): Gate
+    {
+        return Resolver::gate();
     }
 
     /**
@@ -126,6 +175,26 @@ class RetrieveAuthenticatableController
         ];
     }
 
+    public function getRoute(): Route
+    {
+        return $this->getRouter()->current() ?? throw new \LogicException('Unable to get current route.');
+    }
+
+    public function getRouter(): Router
+    {
+        return Resolver::router();
+    }
+
+    public function getThrower(): Thrower
+    {
+        return Thrower::inject(['validator' => $this->createValidator([])]);
+    }
+
+    public function getTrans(): Trans
+    {
+        return Trans::inject();
+    }
+
     public function getUserProvider(): UserProvider
     {
         return $this->getAuthManager()->createUserProvider() ?? throw new \RuntimeException('Unable to create user provider.');
@@ -162,6 +231,8 @@ class RetrieveAuthenticatableController
 
     public function handle(): JsonResponse|RedirectResponse|Response
     {
+        $this->authenticate();
+
         return $this->getResponse();
     }
 

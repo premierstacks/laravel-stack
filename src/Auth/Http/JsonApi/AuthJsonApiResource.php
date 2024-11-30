@@ -24,6 +24,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Model;
 use Premierstacks\LaravelStack\Auth\Guards\UnlimitedTokenGuard;
 use Premierstacks\LaravelStack\Auth\Models\UnlimitedToken;
 use Premierstacks\LaravelStack\Container\Resolver;
@@ -79,6 +80,10 @@ class AuthJsonApiResource extends AuthenticatableJsonApiResource
 
         if ($this->authenticatable instanceof MustVerifyEmail) {
             yield 'email_for_verification' => Strings::nullify($this->authenticatable->getEmailForVerification());
+        }
+
+        if ($this->authenticatable instanceof Model) {
+            yield from $this->authenticatable->attributesToArray();
         }
     }
 

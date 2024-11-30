@@ -27,7 +27,7 @@ use Premierstacks\PhpStack\JsonApi\JsonApiSourceInterface;
 
 class ValidationMessageJsonApiError extends ThrowableJsonApiError
 {
-    public function __construct(public string $attribute, public string $message, ValidationException $throwable)
+    public function __construct(public string $pointer, public string|null $message, ValidationException $throwable)
     {
         parent::__construct($throwable);
     }
@@ -52,6 +52,6 @@ class ValidationMessageJsonApiError extends ThrowableJsonApiError
 
     public function getValidationExceptionSource(): JsonApiSourceInterface|null
     {
-        return Resolver::inject(JsonApiSource::class, ['pointer' => $this->attribute]);
+        return Resolver::inject(JsonApiSource::class, ['pointer' => $this->pointer]);
     }
 }

@@ -101,7 +101,7 @@ abstract class MixedAuthenticatable extends IlluminateUser implements HasLocaleP
             return $email;
         }
 
-        if ($this->attributeLoaded('email')) {
+        if ($this->hasAttribute('email')) {
             return Assert::nullableString($this->getAttribute('email'));
         }
 

@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\JsonApi;
 
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Premierstacks\LaravelStack\Container\InjectTrait;
 use Premierstacks\PhpStack\JsonApi\JsonApiErrorInterface;
@@ -50,6 +51,10 @@ class ThrowableJsonApiErrors extends JsonApiErrors
      */
     public function getThrowableErrors(): iterable
     {
+        if ($this->throwable instanceof ValidationException) {
+            return [];
+        }
+
         yield ThrowableJsonApiError::inject(['throwable' => $this->throwable]);
     }
 
@@ -62,15 +67,17 @@ class ThrowableJsonApiErrors extends JsonApiErrors
             return [];
         }
 
+        yield ValidationMessageJsonApiError::inject(['pointer' => '/', 'message' => null, 'throwable' => $this->throwable]);
+
         foreach ($this->throwable->errors() as $attribute => $messages) {
             foreach (Assert::iterable($messages) as $message) {
-                yield ValidationMessageJsonApiError::inject(['attribute' => (string) $attribute, 'message' => Assert::string($message), 'throwable' => $this->throwable]);
+                yield ValidationMessageJsonApiError::inject(['pointer' => Str::start(\str_replace('.', '/', (string) $attribute), '/'), 'message' => Assert::string($message), 'throwable' => $this->throwable]);
             }
         }
 
         foreach ($this->throwable->validator->failed() as $attribute => $rules) {
             foreach (Assert::iterable($rules) as $rule => $args) {
-                yield ValidationRuleJsonApiError::inject(['attribute' => (string) $attribute, 'rule' => (string) $rule, 'throwable' => $this->throwable]);
+                yield ValidationRuleJsonApiError::inject(['pointer' => Str::start(\str_replace('.', '/', (string) $attribute), '/'), 'rule' => (string) $rule, 'throwable' => $this->throwable]);
             }
         }
     }

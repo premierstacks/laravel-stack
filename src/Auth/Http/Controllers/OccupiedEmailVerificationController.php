@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 
-use Illuminate\Auth\Access\Gate;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
@@ -31,18 +31,26 @@ use Illuminate\Http\Response;
 use Premierstacks\LaravelStack\Container\Resolver;
 use Premierstacks\LaravelStack\Exceptions\Thrower;
 use Premierstacks\LaravelStack\Translation\Trans;
+use Premierstacks\PhpStack\Mixed\Assert;
 use Premierstacks\PhpStack\Mixed\Filter;
 
 class OccupiedEmailVerificationController extends EmailVerificationController
 {
     public function authorize(): void
     {
-        $gate = $this->getGate()->forUser($this->retrieveAuthenticatable());
-        $scope = $this->getScope();
+        $ability = $this->getAuthorizeAbility();
 
-        if ($gate->has($scope)) {
-            $gate->authorize($scope);
+        if ($ability === true) {
+            return;
         }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
+
+        $gate->authorize($ability, $this->retrieveAuthenticatable());
     }
 
     public function authorizePassword(): void
@@ -71,17 +79,23 @@ class OccupiedEmailVerificationController extends EmailVerificationController
         ];
     }
 
+    public function getAuthorizeAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authorize_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
+    }
+
     #[\Override]
     public function getContext(): iterable
     {
         yield from parent::getContext();
 
         yield from $this->getAuthenticatableContext();
-    }
-
-    public function getGate(): Gate
-    {
-        return Resolver::gate();
     }
 
     public function getHasher(): Hasher
@@ -94,6 +108,17 @@ class OccupiedEmailVerificationController extends EmailVerificationController
         return Filter::string($this->createValidator([
             'password' => $this->getAuthenticatableValidity()->password()->required()->compile(),
         ])->validate()['password'] ?? null);
+    }
+
+    public function getPasswordAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['password_ability'] ?? false;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     /**
@@ -124,13 +149,16 @@ class OccupiedEmailVerificationController extends EmailVerificationController
     #[\Override]
     public function handle(): JsonResponse|RedirectResponse|Response
     {
+        $this->authenticate();
         $this->authorize();
 
         if ($this->shouldAuthorizePassword()) {
             $this->authorizePassword();
         }
 
-        return parent::handle();
+        $this->notify();
+
+        return $this->getResponse();
     }
 
     public function retrieveAuthenticatable(): Authenticatable
@@ -157,17 +185,14 @@ class OccupiedEmailVerificationController extends EmailVerificationController
 
     public function shouldAuthorizePassword(): bool
     {
-        $gate = $this->getGate()->forUser($this->retrieveAuthenticatable());
-        $scope = $this->getScope();
+        $ability = $this->getPasswordAbility();
 
-        if ($gate->has("{$scope}_password_authorization")) {
-            return $gate->allows("{$scope}_password_authorization");
+        if (\is_bool($ability)) {
+            return !$ability;
         }
 
-        if ($gate->has('password_authorization')) {
-            return $gate->allows('password_authorization');
-        }
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
 
-        return true;
+        return $gate->allows($ability, $this->retrieveAuthenticatable());
     }
 }

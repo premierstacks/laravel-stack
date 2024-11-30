@@ -20,10 +20,15 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Access\Gate;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Route;
+use Illuminate\Routing\Router;
 use Illuminate\Validation\Factory;
 use Illuminate\Validation\Validator;
 use Premierstacks\LaravelStack\Auth\Http\JsonApi\VerificationJsonApiResource;
@@ -37,11 +42,31 @@ use Premierstacks\PhpStack\JsonApi\JsonApiDocument;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocumentInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceIdentifierInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceInterface;
+use Premierstacks\PhpStack\Mixed\Assert;
 use Premierstacks\PhpStack\Mixed\Filter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VerificationShowController
 {
+    public function authenticate(): void
+    {
+        $authenticatable = $this->getAuthenticatable();
+
+        $ability = $this->getAuthenticateAbility();
+
+        if ($ability === true) {
+            return;
+        }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($authenticatable);
+
+        $gate->authorize($ability);
+    }
+
     /**
      * @return JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable<array-key, JsonApiResourceIdentifierInterface|JsonApiResourceInterface>|null
      */
@@ -64,6 +89,27 @@ class VerificationShowController
     public function createVerificationJsonApiResource(VerificationInterface $verification): JsonApiResourceIdentifierInterface|JsonApiResourceInterface|iterable|null
     {
         return VerificationJsonApiResource::inject(['verification' => $verification]);
+    }
+
+    public function getAuthenticatable(): Authenticatable|null
+    {
+        return \once(static fn(): Authenticatable|null => Resolver::authenticatableContract());
+    }
+
+    public function getAuthenticateAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authenticate_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
+    }
+
+    public function getGate(): Gate
+    {
+        return Resolver::gate();
     }
 
     /**
@@ -98,6 +144,16 @@ class VerificationShowController
     public function getResponse(): JsonResponse
     {
         return $this->getJsonApiResponseFactory()->json($this->getJsonApiDocument());
+    }
+
+    public function getRoute(): Route
+    {
+        return $this->getRouter()->current() ?? throw new \LogicException('Unable to get current route.');
+    }
+
+    public function getRouter(): Router
+    {
+        return Resolver::router();
     }
 
     /**
@@ -153,6 +209,8 @@ class VerificationShowController
 
     public function handle(): JsonResponse|RedirectResponse|Response
     {
+        $this->authenticate();
+
         return $this->getResponse();
     }
 }

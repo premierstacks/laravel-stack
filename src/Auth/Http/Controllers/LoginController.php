@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -53,17 +54,50 @@ use Premierstacks\PhpStack\Mixed\Filter;
 
 class LoginController
 {
+    public function authenticate(): void
+    {
+        $authenticatable = $this->getAuthenticatable();
+
+        $ability = $this->getAuthenticateAbility();
+
+        if ($ability === true) {
+            return;
+        }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($authenticatable);
+
+        $gate->authorize($ability);
+    }
+
     public function authorize(): void
     {
-        $gate = $this->getGate()->forUser($this->retrieveAuthenticatable());
-        $scope = $this->getScope();
+        $ability = $this->getAuthorizeAbility();
 
-        if ($gate->has($scope)) {
-            $gate->authorize($scope);
+        if ($ability === true) {
+            return;
+        }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
+
+        $gate->authorize($ability, $this->retrieveAuthenticatable());
+    }
+
+    public function authorizePassword(): void
+    {
+        if (!$this->getHasher()->check($this->getPassword(), $this->retrieveAuthenticatable()->getAuthPassword())) {
+            $this->getThrower()->errors(['password'], $this->getTrans()->string('auth.password'))->throw(403);
         }
     }
 
-    public function authorizeMultifactor(): void
+    public function authorizeVerificator(): void
     {
         $verificator = $this->getVerificator();
 
@@ -71,13 +105,6 @@ class LoginController
 
         if ($verification === null || !$verificator->decrementUses($verification)) {
             $this->getThrower()->failures(['session_id'], 'Confirmed')->throw(403);
-        }
-    }
-
-    public function authorizePassword(): void
-    {
-        if (!$this->getHasher()->check($this->getPassword(), $this->retrieveAuthenticatable()->getAuthPassword())) {
-            $this->getThrower()->errors(['password'], $this->getTrans()->string('auth.password'))->throw(403);
         }
     }
 
@@ -99,9 +126,36 @@ class LoginController
         return Resolver::authManager();
     }
 
+    public function getAuthenticatable(): Authenticatable|null
+    {
+        return \once(static fn(): Authenticatable|null => Resolver::authenticatableContract());
+    }
+
     public function getAuthenticatableValidity(): AuthenticatableValidity
     {
         return AuthenticatableValidity::inject();
+    }
+
+    public function getAuthenticateAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authenticate_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
+    }
+
+    public function getAuthorizeAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authorize_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     public function getEmail(): string
@@ -149,6 +203,17 @@ class LoginController
         return Filter::string($this->createValidator([
             'password' => $this->getAuthenticatableValidity()->password()->required()->compile(),
         ])->validate()['password'] ?? null);
+    }
+
+    public function getPasswordAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['password_ability'] ?? false;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     public function getRemember(): bool
@@ -274,16 +339,28 @@ class LoginController
         return Verificator::inject();
     }
 
+    public function getVerificatorAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['verificator_ability'] ?? false;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
+    }
+
     public function handle(): JsonResponse|RedirectResponse|Response
     {
+        $this->authenticate();
         $this->authorize();
 
         if ($this->shouldAuthorizePassword()) {
             $this->authorizePassword();
         }
 
-        if ($this->shouldAuthorizeMultifactor()) {
-            $this->authorizeMultifactor();
+        if ($this->shouldAuthorizeVerificator()) {
+            $this->authorizeVerificator();
         }
 
         $this->login();
@@ -345,35 +422,29 @@ class LoginController
         });
     }
 
-    public function shouldAuthorizeMultifactor(): bool
-    {
-        $gate = $this->getGate()->forUser($this->retrieveAuthenticatable());
-        $scope = $this->getScope();
-
-        if ($gate->has("{$scope}_multifactor_authorization")) {
-            return $gate->allows("{$scope}_multifactor_authorization");
-        }
-
-        if ($gate->has('multifactor_authorization')) {
-            return $gate->allows('multifactor_authorization');
-        }
-
-        return true;
-    }
-
     public function shouldAuthorizePassword(): bool
     {
-        $gate = $this->getGate()->forUser($this->retrieveAuthenticatable());
-        $scope = $this->getScope();
+        $ability = $this->getPasswordAbility();
 
-        if ($gate->has("{$scope}_password_authorization")) {
-            return $gate->allows("{$scope}_password_authorization");
+        if (\is_bool($ability)) {
+            return !$ability;
         }
 
-        if ($gate->has('password_authorization')) {
-            return $gate->allows('password_authorization');
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
+
+        return $gate->allows($ability, $this->retrieveAuthenticatable());
+    }
+
+    public function shouldAuthorizeVerificator(): bool
+    {
+        $ability = $this->getVerificatorAbility();
+
+        if (\is_bool($ability)) {
+            return !$ability;
         }
 
-        return true;
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
+
+        return $gate->allows($ability, $this->retrieveAuthenticatable());
     }
 }

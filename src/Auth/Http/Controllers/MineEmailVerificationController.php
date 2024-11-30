@@ -21,10 +21,10 @@ declare(strict_types=1);
 namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -33,20 +33,11 @@ use Illuminate\Http\Response;
 use Premierstacks\LaravelStack\Container\Resolver;
 use Premierstacks\LaravelStack\Exceptions\Thrower;
 use Premierstacks\LaravelStack\Translation\Trans;
+use Premierstacks\PhpStack\Mixed\Assert;
 use Premierstacks\PhpStack\Mixed\Filter;
 
 class MineEmailVerificationController extends EmailVerificationController
 {
-    public function authorize(): void
-    {
-        $gate = $this->getGate()->forUser($this->getAuthenticatable());
-        $scope = $this->getScope();
-
-        if ($gate->has($scope)) {
-            $gate->authorize($scope);
-        }
-    }
-
     public function authorizePassword(): void
     {
         if (!$this->getHasher()->check($this->getPassword(), $this->getAuthenticatable()->getAuthPassword())) {
@@ -54,6 +45,7 @@ class MineEmailVerificationController extends EmailVerificationController
         }
     }
 
+    #[\Override]
     public function getAuthenticatable(): Authenticatable
     {
         return \once(static fn(): Authenticatable => Resolver::authenticatableContract() ?? throw new AuthenticationException(guards: [null]));
@@ -86,14 +78,6 @@ class MineEmailVerificationController extends EmailVerificationController
     {
         $authenticatable = $this->getAuthenticatable();
 
-        if ($authenticatable instanceof CanResetPassword) {
-            $email = $authenticatable->getEmailForPasswordReset();
-
-            if (\is_string($email) && $email !== '') {
-                return $email;
-            }
-        }
-
         if ($authenticatable instanceof Model && $authenticatable->hasAttribute('email')) {
             $email = $authenticatable->getAttribute('email');
 
@@ -102,12 +86,23 @@ class MineEmailVerificationController extends EmailVerificationController
             }
         }
 
-        throw new AuthorizationException(previous: new \LogicException('Unable to retrieve email from authenticatable'));
-    }
+        if ($authenticatable instanceof CanResetPassword) {
+            $email = $authenticatable->getEmailForPasswordReset();
 
-    public function getGate(): Gate
-    {
-        return Resolver::gate();
+            if (\is_string($email) && $email !== '') {
+                return $email;
+            }
+        }
+
+        if ($authenticatable instanceof MustVerifyEmail) {
+            $email = $authenticatable->getEmailForVerification();
+
+            if (\is_string($email) && $email !== '') {
+                return $email;
+            }
+        }
+
+        throw new AuthorizationException(previous: new \LogicException('Unable to retrieve email from authenticatable'));
     }
 
     public function getHasher(): Hasher
@@ -120,6 +115,17 @@ class MineEmailVerificationController extends EmailVerificationController
         return Filter::string($this->createValidator([
             'password' => $this->getAuthenticatableValidity()->password()->required()->compile(),
         ])->validate()['password'] ?? null);
+    }
+
+    public function getPasswordAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['password_ability'] ?? false;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     public function getThrower(): Thrower
@@ -135,28 +141,27 @@ class MineEmailVerificationController extends EmailVerificationController
     #[\Override]
     public function handle(): JsonResponse|RedirectResponse|Response
     {
-        $this->authorize();
+        $this->authenticate();
 
         if ($this->shouldAuthorizePassword()) {
             $this->authorizePassword();
         }
 
-        return parent::handle();
+        $this->notify();
+
+        return $this->getResponse();
     }
 
     public function shouldAuthorizePassword(): bool
     {
+        $ability = $this->getPasswordAbility();
+
+        if (\is_bool($ability)) {
+            return !$ability;
+        }
+
         $gate = $this->getGate()->forUser($this->getAuthenticatable());
-        $scope = $this->getScope();
 
-        if ($gate->has("{$scope}_password_authorization")) {
-            return $gate->allows("{$scope}_password_authorization");
-        }
-
-        if ($gate->has('password_authorization')) {
-            return $gate->allows('password_authorization');
-        }
-
-        return false;
+        return $gate->denies($ability);
     }
 }

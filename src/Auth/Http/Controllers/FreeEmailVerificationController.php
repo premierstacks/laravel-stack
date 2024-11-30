@@ -77,9 +77,13 @@ class FreeEmailVerificationController extends EmailVerificationController
     #[\Override]
     public function handle(): JsonResponse|RedirectResponse|Response
     {
+        $this->authenticate();
+
         $this->uniqueCredentials();
 
-        return parent::handle();
+        $this->notify();
+
+        return $this->getResponse();
     }
 
     public function uniqueCredentials(): void

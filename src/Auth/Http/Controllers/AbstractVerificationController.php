@@ -20,6 +20,9 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Access\Gate;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,6 +35,7 @@ use Illuminate\Validation\Validator;
 use Premierstacks\LaravelStack\Auth\Http\JsonApi\VerificationJsonApiResource;
 use Premierstacks\LaravelStack\Auth\Http\Validation\AuthenticatableValidity;
 use Premierstacks\LaravelStack\Auth\Http\Validation\VerificationValidity;
+use Premierstacks\LaravelStack\Config\Conf;
 use Premierstacks\LaravelStack\Container\Resolver;
 use Premierstacks\LaravelStack\JsonApi\JsonApiResponseFactory;
 use Premierstacks\LaravelStack\Verification\VerificationInterface;
@@ -47,6 +51,25 @@ use Premierstacks\PhpStack\Random\Random;
 
 abstract class AbstractVerificationController
 {
+    public function authenticate(): void
+    {
+        $authenticatable = $this->getAuthenticatable();
+
+        $ability = $this->getAuthenticateAbility();
+
+        if ($ability === true) {
+            return;
+        }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($authenticatable);
+
+        $gate->authorize($ability);
+    }
+
     /**
      * @param array<array-key, mixed> $rules
      */
@@ -70,9 +93,25 @@ abstract class AbstractVerificationController
         return Assert::string($this->getRoute()->defaults['action'] ?? $this->getScope());
     }
 
+    public function getAuthenticatable(): Authenticatable|null
+    {
+        return \once(static fn(): Authenticatable|null => Resolver::authenticatableContract());
+    }
+
     public function getAuthenticatableValidity(): AuthenticatableValidity
     {
         return AuthenticatableValidity::inject();
+    }
+
+    public function getAuthenticateAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authenticate_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     /**
@@ -91,6 +130,11 @@ abstract class AbstractVerificationController
     public function getExpiresAt(): Carbon
     {
         return Carbon::now()->addSeconds(600);
+    }
+
+    public function getGate(): Gate
+    {
+        return Resolver::gate();
     }
 
     /**
@@ -113,9 +157,7 @@ abstract class AbstractVerificationController
 
     public function getLocale(): string
     {
-        return Filter::string($this->createValidator([
-            'locale' => $this->getAuthenticatableValidity()->locale()->required()->compile(),
-        ])->validate()['locale'] ?? null);
+        return Conf::inject()->getAppLocale();
     }
 
     public function getPair(): string
@@ -223,6 +265,8 @@ abstract class AbstractVerificationController
 
     public function handle(): JsonResponse|RedirectResponse|Response
     {
+        $this->authenticate();
+
         $this->notify();
 
         return $this->getResponse();

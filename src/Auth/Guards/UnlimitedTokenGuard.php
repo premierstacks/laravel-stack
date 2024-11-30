@@ -28,7 +28,6 @@ use Illuminate\Contracts\Auth\Guard as GuardContract;
 use Illuminate\Contracts\Auth\UserProvider as UserProviderContract;
 use Illuminate\Contracts\Cookie\QueueingFactory as CookieQueueingFactoryContract;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Premierstacks\LaravelStack\Auth\Models\UnlimitedToken;
 use Premierstacks\LaravelStack\Config\Conf;
 use Premierstacks\LaravelStack\Container\InjectTrait;
@@ -54,13 +53,18 @@ class UnlimitedTokenGuard implements GuardContract
 
     public function authorize(AuthenticatableContract $authenticatable): Response
     {
-        $gate = $this->getGate()->forUser($authenticatable);
+        $config = $this->getConfig();
 
-        if ($gate->has('login')) {
-            return $gate->inspect('login');
+        $ability = \array_key_exists('ability', $config) ? $config['ability'] : true;
+
+        if (\is_bool($ability)) {
+            return $ability ? Response::allow() : Response::deny();
         }
 
-        return Response::allow();
+        $ability = Assert::string($ability);
+        $gate = $this->getGate()->forUser(null);
+
+        return $gate->inspect($ability, $authenticatable);
     }
 
     #[\Override]
@@ -145,9 +149,7 @@ class UnlimitedTokenGuard implements GuardContract
             return Assert::string($config['cookie_name']);
         }
 
-        $conf = $this->getConf();
-
-        return $this->getCookiePrefix() . Str::slug("authorization-{$this->getGuardName()}-{$conf->getAppName()}-{$conf->getAppEnv()}", '-', null);
+        return $this->getConf()->getSessionCookie() . "-authorization-{$this->getGuardName()}";
     }
 
     public function getCookiePath(): string|null
@@ -159,19 +161,6 @@ class UnlimitedTokenGuard implements GuardContract
         }
 
         return $this->getConf()->getSessionPath();
-    }
-
-    public function getCookiePrefix(): string
-    {
-        if ($this->getCookieDomain() === null && $this->getCookieSecure() === true && $this->getCookiePath() === '/') {
-            return '__Host-';
-        }
-
-        if ($this->getCookieSecure() === true) {
-            return '__Secure-';
-        }
-
-        return '';
     }
 
     public function getCookieSameSite(): string

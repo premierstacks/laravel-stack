@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Premierstacks\LaravelStack\Auth\Http\Controllers;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Auth\EloquentUserProvider;
@@ -53,6 +54,25 @@ use Premierstacks\PhpStack\Mixed\Filter;
 
 class RegisterController
 {
+    public function authenticate(): void
+    {
+        $authenticatable = $this->getAuthenticatable();
+
+        $ability = $this->getAuthenticateAbility();
+
+        if ($ability === true) {
+            return;
+        }
+
+        if ($ability === false) {
+            throw new AuthorizationException();
+        }
+
+        $gate = $this->getGate()->forUser($authenticatable);
+
+        $gate->authorize($ability);
+    }
+
     public function authorizeCredentials(): void
     {
         $credentalsToAuthorize = \iterator_to_array($this->getCredentialsToAuthorize());
@@ -137,9 +157,36 @@ class RegisterController
         return Resolver::authManager();
     }
 
+    public function getAuthenticatable(): Authenticatable|null
+    {
+        return \once(static fn(): Authenticatable|null => Resolver::authenticatableContract());
+    }
+
     public function getAuthenticatableValidity(): AuthenticatableValidity
     {
         return AuthenticatableValidity::inject();
+    }
+
+    public function getAuthenticateAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['authenticate_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
+    }
+
+    public function getCredentialsAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['credentials_ability'] ?? false;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     /**
@@ -197,6 +244,17 @@ class RegisterController
         return Filter::string($this->createValidator([
             'locale' => $this->getAuthenticatableValidity()->locale()->required()->compile(),
         ])->validate()['locale'] ?? null);
+    }
+
+    public function getLoginAbility(): bool|string
+    {
+        $ability = $this->getRoute()->defaults['login_ability'] ?? true;
+
+        if (\is_bool($ability)) {
+            return $ability;
+        }
+
+        return Assert::string($ability);
     }
 
     public function getPassword(): string
@@ -327,6 +385,8 @@ class RegisterController
 
     public function handle(): JsonResponse|RedirectResponse|Response
     {
+        $this->authenticate();
+
         $this->uniqueCredentials();
 
         if ($this->shouldAuthorizeCredentials()) {
@@ -335,7 +395,6 @@ class RegisterController
 
         if ($this->shouldLogin()) {
             $this->login();
-
             $this->regenerateSession();
         }
 
@@ -374,18 +433,28 @@ class RegisterController
 
     public function shouldAuthorizeCredentials(): bool
     {
-        return true;
+        $ability = $this->getCredentialsAbility();
+
+        if (\is_bool($ability)) {
+            return !$ability;
+        }
+
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
+
+        return $gate->denies($ability);
     }
 
     public function shouldLogin(): bool
     {
-        $gate = $this->getGate()->forUser($this->createAuthenticatable());
+        $ability = $this->getLoginAbility();
 
-        if ($gate->has('login')) {
-            return $gate->allows('login');
+        if (\is_bool($ability)) {
+            return $ability;
         }
 
-        return true;
+        $gate = $this->getGate()->forUser($this->getAuthenticatable());
+
+        return $gate->allows($ability);
     }
 
     public function uniqueCredentials(): void
