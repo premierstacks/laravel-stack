@@ -22,6 +22,8 @@ namespace Premierstacks\LaravelStack\Validation\Validity;
 
 class CarbonLimits
 {
+    public static bool $micro = true;
+
     public function __construct(public CarbonValidity $validity) {}
 
     public function date(): CarbonValidity
@@ -31,12 +33,30 @@ class CarbonLimits
 
     public function format(string $format): CarbonValidity
     {
-        return $this->validity->setBase([$this->validity->encodeRule('date_format' . $format)]);
+        return $this->validity->setBase([$this->validity->encodeRule('date_format', [$format])]);
     }
 
-    public function iso(): CarbonValidity
+    public function hours(): CarbonValidity
     {
-        return $this->validity->setBase([$this->validity->encodeRule('date_format', ['Y-m-d\TH:i:s.up'])]);
+        return $this->validity->setBase([$this->validity->encodeRule('date_format', ['H'])]);
+    }
+
+    public function iso(bool|null $micro = null): CarbonValidity
+    {
+        $micro ??= static::$micro;
+        $scale = $micro ? 'v' : 'u';
+
+        return $this->validity->setBase([$this->validity->encodeRule('date_format', ["Y-m-d\\TH:i:s.{$scale}p"])]);
+    }
+
+    public function minutes(): CarbonValidity
+    {
+        return $this->validity->setBase([$this->validity->encodeRule('date_format', ['H:i'])]);
+    }
+
+    public function seconds(): CarbonValidity
+    {
+        return $this->validity->setBase([$this->validity->encodeRule('date_format', ['H:i:s'])]);
     }
 
     public function unsafe(): CarbonValidity
@@ -44,8 +64,11 @@ class CarbonLimits
         return $this->validity;
     }
 
-    public function utc(): CarbonValidity
+    public function utc(bool|null $micro = null): CarbonValidity
     {
-        return $this->validity->setBase([$this->validity->encodeRule('date_format', ['Y-m-d\TH:i:s.u\Z'])]);
+        $micro ??= static::$micro;
+        $scale = $micro ? 'v' : 'u';
+
+        return $this->validity->setBase([$this->validity->encodeRule('date_format', ["Y-m-d\\TH:i:s.{$scale}\\Z"])]);
     }
 }
