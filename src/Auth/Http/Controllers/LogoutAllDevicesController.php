@@ -42,6 +42,7 @@ use Premierstacks\LaravelStack\Container\Resolver;
 use Premierstacks\LaravelStack\Exceptions\Thrower;
 use Premierstacks\LaravelStack\JsonApi\JsonApiResponseFactory;
 use Premierstacks\LaravelStack\Translation\Trans;
+use Premierstacks\LaravelStack\Validation\Validity\Validity;
 use Premierstacks\LaravelStack\Verification\Verificator;
 use Premierstacks\LaravelStack\Verification\VerificatorInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocument;
@@ -124,6 +125,18 @@ class LogoutAllDevicesController
         return Assert::string($ability);
     }
 
+    public function getClear(): bool
+    {
+        return Filter::bool($this->createValidator([
+            'clear' => Validity::boolean()->filled()->compile(),
+        ])->validate()['clear'] ?? false);
+    }
+
+    public function getClearSiteData(): string
+    {
+        return '"*"';
+    }
+
     public function getGate(): Gate
     {
         return Resolver::gate();
@@ -182,9 +195,9 @@ class LogoutAllDevicesController
 
     public function getResponse(): JsonResponse|RedirectResponse|Response
     {
-        return $this->getJsonApiResponseFactory()->json($this->getJsonApiDocument(), null, [
-            'Clear-Site-Data' => '"*"',
-        ]);
+        return $this->getJsonApiResponseFactory()->json($this->getJsonApiDocument(), null, $this->getClear() ? [
+            'Clear-Site-Data' => $this->getClearSiteData(),
+        ] : []);
     }
 
     public function getRoute(): Route
