@@ -64,7 +64,9 @@ class MysqlGeo
     }
 
     /**
-     * @param Builder<Model> $builder
+     * @template T of Model
+     *
+     * @param Builder<T> $builder
      */
     public static function scopeGeomColumnContains(Builder $builder, Geom $geom, string $column): void
     {
@@ -72,7 +74,9 @@ class MysqlGeo
     }
 
     /**
-     * @param Builder<Model> $builder
+     * @template T of Model
+     *
+     * @param Builder<T> $builder
      */
     public static function selectColumnGeomDistance(Builder $builder, string $column, Point $point, string|null $distance = null): void
     {
@@ -82,7 +86,9 @@ class MysqlGeo
     }
 
     /**
-     * @param Builder<Model> $builder
+     * @template T of Model
+     *
+     * @param Builder<T> $builder
      */
     public static function selectLatLng(Builder $builder, string $column, string|null $lat = null, string|null $lng = null): void
     {
