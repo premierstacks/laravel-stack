@@ -50,7 +50,7 @@ class Verificator implements VerificatorInterface
 
         $verification->setSessionId($sessionId);
         $verification->setVerificationId($verificationId);
-        $verification->setToken($token);
+        $verification->setHash($token);
         $verification->setPair($pair);
         $verification->setContext($context);
         $verification->setAction($action);
