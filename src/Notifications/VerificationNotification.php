@@ -76,7 +76,7 @@ class VerificationNotification extends Notification implements ShouldQueueContra
             ->line($trans->string("notifications.{$class}.{$variant}.line_1"))
             ->line($trans->string("notifications.{$class}.{$variant}.line_2"))
             ->line($trans->string("notifications.{$class}.{$variant}.line_3", ['action' => $this->getAction()]))
-            ->line($trans->string("notifications.{$class}.{$variant}.line_4", ['pair' => $this->verification->getPair()]))
+            // ->line($trans->string("notifications.{$class}.{$variant}.line_4", ['pair' => $this->verification->getPair()]))
             ->action($trans->string("notifications.{$class}.{$variant}.button"), $this->getUrl($notifiable))
             ->line($trans->string("notifications.{$class}.{$variant}.line_expiration", ['minutes' => (string) $this->verification->getExpiresAt()->diffInMinutes()]))
             ->line($trans->string("notifications.{$class}.{$variant}.line_not_you"));
