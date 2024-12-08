@@ -23,14 +23,20 @@ use Premierstacks\LaravelStack\Notifications\VerificationNotification;
 return [
     VerificationNotification::class => [
         'token' => [
-            'subject' => 'Požiadavka na autorizáciu akcie',
-            'line_1' => 'Tento email bol odoslaný ako súčasť bezpečnostného procesu overenia pre pokračovanie vo vyžadovanej akcii vo Vašom účte.',
-            'line_2' => 'Pre zobrazenie detailov a potvrdenie tejto akcie, prosím, kliknite na tlačidlo nižšie.',
-            'line_3' => 'Chystáte sa autorizovať akciu: :action',
-            'line_4' => 'Párovací kód: :pair',
-            'line_expiration' => 'Upozorňujeme, že platnosť tohto prepojenia čoskoro vyprší.',
-            'line_not_you' => 'Ak ste túto akciu neiniciovali, ignorujte tento email alebo nás informujte.',
-            'button' => 'Zobraziť požiadavku',
+            'subject' => 'Potvrdenie akcie vo vašom účte',
+            'line_1_title' => 'Obsah:',
+            'line_1' => 'Tento e-mail bol odoslaný ako súčasť procesu zabezpečenia vášho účtu. Aby bolo možné pokračovať v požadovanej akcii, je potrebné potvrdiť jej platnosť.',
+            'line_2_title' => 'Čo sa deje:',
+            'line_2' => 'Potvrdzujete akciu: :action',
+            'line_3_title' => 'Kontrolné symboly:',
+            'line_3' => 'Tieto symboly overujú, že tento e-mail skutočne súvisí s vašou požiadavkou. Na stránke, kde akciu potvrdíte, uvidíte rovnaké symboly: :pair',
+            'line_4_title' => 'Ako postupovať:',
+            'line_4' => 'Kliknite na tlačidlo nižšie a postupujte podľa pokynov na stránke. Tlačidlo vás presmeruje na stránku, kde môžete akciu bezpečne potvrdiť.',
+            'line_expiration_title' => 'Upozornenie:',
+            'line_expiration' => 'Platnosť odkazu je časovo obmedzená. Ak akciu nepotvrdíte včas, bude potrebné proces začať odznova.',
+            'line_not_you_title' => 'Nie ste to vy?',
+            'line_not_you' => 'Ak ste túto akciu nepožadovali, jednoducho tento e-mail ignorujte. V prípade pochybností nás prosím okamžite kontaktujte.',
+            'button' => 'Potvrdiť akciu',
         ],
         'code' => [
             'subject' => 'Požiadavka na manuálne autorizáciu akcie',

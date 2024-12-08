@@ -73,12 +73,18 @@ class VerificationNotification extends Notification implements ShouldQueueContra
 
         return (new MailMessage())
             ->subject($trans->string("notifications.{$class}.{$variant}.subject"))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_1_title"))
             ->line($trans->string("notifications.{$class}.{$variant}.line_1"))
-            ->line($trans->string("notifications.{$class}.{$variant}.line_2"))
-            ->line($trans->string("notifications.{$class}.{$variant}.line_3", ['action' => $this->getAction()]))
-            // ->line($trans->string("notifications.{$class}.{$variant}.line_4", ['pair' => $this->verification->getPair()]))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_2_title"))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_2", ['action' => $this->getAction()]))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_3_title"))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_3", ['pair' => $this->verification->getPair()]))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_4_title"))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_4"))
             ->action($trans->string("notifications.{$class}.{$variant}.button"), $this->getUrl($notifiable))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_expiration_title"))
             ->line($trans->string("notifications.{$class}.{$variant}.line_expiration", ['minutes' => (string) $this->verification->getExpiresAt()->diffInMinutes()]))
+            ->line($trans->string("notifications.{$class}.{$variant}.line_not_you_title"))
             ->line($trans->string("notifications.{$class}.{$variant}.line_not_you"));
     }
 
