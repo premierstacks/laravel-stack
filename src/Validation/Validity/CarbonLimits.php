@@ -44,7 +44,7 @@ class CarbonLimits
     public function iso(bool|null $micro = null): CarbonValidity
     {
         $micro ??= static::$micro;
-        $scale = $micro ? 'v' : 'u';
+        $scale = $micro ? 'u' : 'v';
 
         return $this->validity->setBase([$this->validity->encodeRule('date_format', ["Y-m-d\\TH:i:s.{$scale}p"])]);
     }
@@ -67,7 +67,7 @@ class CarbonLimits
     public function utc(bool|null $micro = null): CarbonValidity
     {
         $micro ??= static::$micro;
-        $scale = $micro ? 'v' : 'u';
+        $scale = $micro ? 'u' : 'v';
 
         return $this->validity->setBase([$this->validity->encodeRule('date_format', ["Y-m-d\\TH:i:s.{$scale}\\Z"])]);
     }
