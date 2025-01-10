@@ -49,11 +49,9 @@ class MultiPolygon implements Expression, Geom
     public static function createFromArray(array $points): self
     {
         return new self(
-            \array_map(static function (array $points): Polygon {
-                return new Polygon(
-                    \array_map(static fn(array $points): array => \array_map(static fn(array $point): Point => Point::createFromArray($point), $points), $points),
-                );
-            }, $points),
+            \array_map(static fn(array $points): Polygon => new Polygon(
+                \array_map(static fn(array $points): array => \array_map(static fn(array $point): Point => Point::createFromArray($point), $points), $points),
+            ), $points),
         );
     }
 }

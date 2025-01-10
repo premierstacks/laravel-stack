@@ -43,12 +43,10 @@ class Polygon implements Expression, Geom
     {
         $rings = \implode(
             '), (',
-            \array_map(static function (array $ring): string {
-                return \implode(
-                    ', ',
-                    \array_map(static fn(Point $point): string => $point->getPoint(), $ring),
-                );
-            }, $this->rings),
+            \array_map(static fn(array $ring): string => \implode(
+                ', ',
+                \array_map(static fn(Point $point): string => $point->getPoint(), $ring),
+            ), $this->rings),
         );
 
         return "({$rings})";
