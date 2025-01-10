@@ -217,7 +217,7 @@ Ensure this package fits your needs and that you agree with the terms.
 Setup composer repostory:
 
 ```bash
-composer config repositories.premierstacks/laravel-stack github git@github.com:premierstacks/laravel-stack.git
+composer config repositories.premierstacks/laravel-stack '{"type": "vcs", "url": "https://github.com/premierstacks/laravel-stack.git", "no-api": true}'
 ```
 
 Install using composer:

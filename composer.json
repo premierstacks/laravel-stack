@@ -56,16 +56,19 @@
   "prefer-stable": true,
   "repositories": [
     {
-      "type": "github",
-      "url": "git@github.com:premierstacks/php-cs-fixer-stack.git"
+      "type": "vcs",
+      "url": "https://github.com/premierstacks/php-cs-fixer-stack.git",
+      "no-api": true
     },
     {
-      "type": "github",
-      "url": "git@github.com:premierstacks/phpstan-stack.git"
+      "type": "vcs",
+      "url": "https://github.com/premierstacks/phpstan-stack.git",
+      "no-api": true
     },
     {
-      "type": "github",
-      "url": "git@github.com:premierstacks/php-stack.git"
+      "type": "vcs",
+      "url": "https://github.com/premierstacks/php-stack.git",
+      "no-api": true
     }
   ],
   "config": {
