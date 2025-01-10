@@ -4,12 +4,13 @@
   "type": "library",
   "keywords": [
     "tomchochola",
+    "tomaschochola",
     "premierstacks",
     "laravel-stack"
   ],
   "homepage": "https://github.com/premierstacks/laravel-stack",
   "readme": "./README.md",
-  "license": "proprietary",
+  "license": "CC-BY-ND-4.0",
   "authors": [
     {
       "name": "Tomáš Chochola",
@@ -55,16 +56,16 @@
   "prefer-stable": true,
   "repositories": [
     {
-      "type": "git",
-      "url": "https://github.com/premierstacks/php-cs-fixer-stack.git"
+      "type": "github",
+      "url": "git@github.com:premierstacks/php-cs-fixer-stack.git"
     },
     {
-      "type": "git",
-      "url": "https://github.com/premierstacks/phpstan-stack.git"
+      "type": "github",
+      "url": "git@github.com:premierstacks/phpstan-stack.git"
     },
     {
-      "type": "git",
-      "url": "https://github.com/premierstacks/php-stack.git"
+      "type": "github",
+      "url": "git@github.com:premierstacks/php-stack.git"
     }
   ],
   "config": {
