@@ -39,9 +39,6 @@ clean:
 	rm -rf ./package-lock.json
 	rm -rf ./vendor
 
-.PHONY: commit
-commit: fix check
-
 .PHONY: coverage
 coverage: test ./.phpunit.coverage/html
 	${MAKE_PHP} -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
