@@ -239,17 +239,12 @@ The following is a breakdown of the folder and file structure within this reposi
 
 ```bash
 .
+├── AUTHORS.md
+├── composer.json
 ├── .editorconfig
+├── eslint.config.js
 ├── .gitattributes
 ├── .gitignore
-├── .php-cs-fixer.php
-├── .prettierignore
-├── AUTHORS.md
-├── LICENSE.md
-├── Makefile
-├── README.md
-├── composer.json
-├── eslint.config.js
 ├── lang
 │   ├── cs
 │   │   ├── actions.php
@@ -258,9 +253,9 @@ The following is a breakdown of the folder and file structure within this reposi
 │   │   ├── pagination.php
 │   │   ├── passwords.php
 │   │   ├── statuses.php
-│   │   ├── validation.php
 │   │   ├── validation_full.php
 │   │   ├── validation_generic.php
+│   │   ├── validation.php
 │   │   └── validation_simple.php
 │   ├── cs.json
 │   ├── en
@@ -270,9 +265,9 @@ The following is a breakdown of the folder and file structure within this reposi
 │   │   ├── pagination.php
 │   │   ├── passwords.php
 │   │   ├── statuses.php
-│   │   ├── validation.php
 │   │   ├── validation_full.php
 │   │   ├── validation_generic.php
+│   │   ├── validation.php
 │   │   └── validation_simple.php
 │   ├── en.json
 │   ├── sk
@@ -282,15 +277,20 @@ The following is a breakdown of the folder and file structure within this reposi
 │   │   ├── pagination.php
 │   │   ├── passwords.php
 │   │   ├── statuses.php
-│   │   ├── validation.php
 │   │   ├── validation_full.php
 │   │   ├── validation_generic.php
+│   │   ├── validation.php
 │   │   └── validation_simple.php
 │   └── sk.json
+├── LICENSE
+├── Makefile
 ├── package.json
+├── .php-cs-fixer.php
 ├── phpstan.neon
 ├── phpunit.xml
 ├── prettier.config.js
+├── .prettierignore
+├── README.md
 ├── resources
 │   ├── assets
 │   │   └── marbles
@@ -332,8 +332,8 @@ The following is a breakdown of the folder and file structure within this reposi
     │   │   │   ├── VerificationCompleteController.php
     │   │   │   └── VerificationShowController.php
     │   │   ├── JsonApi
-    │   │   │   ├── AuthJsonApiResource.php
     │   │   │   ├── AuthenticatableJsonApiResource.php
+    │   │   │   ├── AuthJsonApiResource.php
     │   │   │   ├── SessionJsonApiResource.php
     │   │   │   ├── UnlimitedTokenJsonApiResource.php
     │   │   │   └── VerificationJsonApiResource.php
@@ -348,10 +348,11 @@ The following is a breakdown of the folder and file structure within this reposi
     ├── Commands
     │   ├── DebugMailCommand.php
     │   ├── MakeEnumCommand.php
-    │   ├── ValidityGeneratorCommand.php
-    │   └── stubs
-    │       ├── enum.stub
-    │       └── validity.stub
+    │   ├── ScoutSyncCommand.php
+    │   ├── stubs
+    │   │   ├── enum.stub
+    │   │   └── validity.stub
+    │   └── ValidityGeneratorCommand.php
     ├── Config
     │   ├── Conf.php
     │   └── Env.php
@@ -375,11 +376,34 @@ The following is a breakdown of the folder and file structure within this reposi
     │   ├── StringModel.php
     │   ├── StringModelTrait.php
     │   └── StringPivot.php
+    ├── Enums
+    │   ├── CzBankCodeEnum.php
+    │   ├── CzPostCodeEnum.php
+    │   └── DayEnum.php
     ├── Exceptions
     │   ├── ExceptionHandler.php
     │   └── Thrower.php
     ├── Fake
     │   └── ImageFaker.php
+    ├── Geo
+    │   ├── Casts
+    │   │   └── PointCast.php
+    │   ├── Enums
+    │   │   ├── Iso3166Char2.php
+    │   │   └── Iso3166Char3.php
+    │   ├── Mysql
+    │   │   └── MysqlGeo.php
+    │   ├── Objects
+    │   │   ├── Bbox.php
+    │   │   ├── Geom.php
+    │   │   ├── MultiPolygon.php
+    │   │   ├── Point.php
+    │   │   └── Polygon.php
+    │   ├── Rules
+    │   │   ├── BboxRule.php
+    │   │   └── PointRule.php
+    │   └── Validity
+    │       └── GeoValidity.php
     ├── Http
     │   ├── Controllers
     │   │   └── NotFoundController.php
@@ -412,12 +436,14 @@ The following is a breakdown of the folder and file structure within this reposi
     │   └── VerificationNotification.php
     ├── Providers
     │   └── LaravelStackServiceProvider.php
+    ├── Scout
+    │   └── ScoutFulltext.php
     ├── Testing
     │   ├── TestCase.php
     │   └── TestCaseTrait.php
     ├── Throttle
-    │   ├── Limit.php
-    │   └── Limiter.php
+    │   ├── Limiter.php
+    │   └── Limit.php
     ├── Translation
     │   └── Trans.php
     ├── Validation
@@ -452,9 +478,9 @@ The following is a breakdown of the folder and file structure within this reposi
     │       ├── FileValidity.php
     │       ├── FloatLimits.php
     │       ├── FloatValidity.php
-    │       ├── InValidity.php
     │       ├── IntegerLimits.php
     │       ├── IntegerValidity.php
+    │       ├── InValidity.php
     │       ├── ListLimits.php
     │       ├── ListValidity.php
     │       ├── MapLimits.php
@@ -466,12 +492,12 @@ The following is a breakdown of the folder and file structure within this reposi
     │       ├── StringValidity.php
     │       └── Validity.php
     └── Verification
-        ├── Context.php
         ├── ContextInterface.php
-        ├── Verification.php
+        ├── Context.php
         ├── VerificationInterface.php
-        ├── Verificator.php
-        └── VerificatorInterface.php
+        ├── Verification.php
+        ├── VerificatorInterface.php
+        └── Verificator.php
 
-40 directories, 193 files
+50 directories, 210 files
 ```
