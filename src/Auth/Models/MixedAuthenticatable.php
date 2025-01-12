@@ -20,7 +20,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Translation\HasLocalePreference as HasLocalePreferenceContract;
 use Illuminate\Foundation\Auth\User as IlluminateUser;
 use Illuminate\Notifications\Notifiable;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\Eloquent\MixedModelTrait;
 use Premierstacks\PhpStack\Mixed\Assert;
 use Premierstacks\PhpStack\Types\Strings;
@@ -107,9 +107,9 @@ abstract class MixedAuthenticatable extends IlluminateUser implements HasLocaleP
     public static function authenticate(string|null $guardName = null): static|null
     {
         if ($guardName === null) {
-            $authenticatable = Resolver::authenticatableContract();
+            $authenticatable = Resolve::authenticatableContract();
         } else {
-            $authenticatable = Resolver::authManager()->guard($guardName)->user();
+            $authenticatable = Resolve::authManager()->guard($guardName)->user();
         }
 
         if ($authenticatable instanceof static) {

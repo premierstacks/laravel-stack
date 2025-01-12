@@ -111,7 +111,7 @@ use Premierstacks\LaravelStack\Config\Env;
 use Premierstacks\LaravelStack\Configuration\MiddlewareConfiguration;
 use Premierstacks\LaravelStack\Configuration\ScheduleConfiguration;
 use Premierstacks\LaravelStack\Container\InjectTrait;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\Database\Factories\AuthenticatableFactory;
 use Premierstacks\LaravelStack\Database\Migrator;
 use Premierstacks\LaravelStack\Eloquent\IntModel;
@@ -361,7 +361,7 @@ The following is a breakdown of the folder and file structure within this reposi
     │   └── ScheduleConfiguration.php
     ├── Container
     │   ├── InjectTrait.php
-    │   └── Resolver.php
+    │   └── Resolve.php
     ├── Database
     │   ├── Factories
     │   │   └── AuthenticatableFactory.php

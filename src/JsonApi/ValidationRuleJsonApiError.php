@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Premierstacks\LaravelStack\JsonApi;
 
 use Illuminate\Validation\ValidationException;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\PhpStack\JsonApi\JsonApiSource;
 use Premierstacks\PhpStack\JsonApi\JsonApiSourceInterface;
 
@@ -63,6 +63,6 @@ class ValidationRuleJsonApiError extends ThrowableJsonApiError
 
     public function getValidationExceptionSource(): JsonApiSourceInterface|null
     {
-        return Resolver::inject(JsonApiSource::class, ['pointer' => $this->pointer]);
+        return Resolve::inject(JsonApiSource::class, ['pointer' => $this->pointer]);
     }
 }

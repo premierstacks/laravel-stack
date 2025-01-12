@@ -18,7 +18,7 @@ namespace Premierstacks\LaravelStack\Http\Middleware;
 
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Http\Request;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\PhpStack\Mixed\Assert;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -26,7 +26,7 @@ class SmartTransactionMiddleware
 {
     public function getConnection(): ConnectionInterface
     {
-        return Resolver::databaseConnectionContract();
+        return Resolve::databaseConnectionContract();
     }
 
     /**

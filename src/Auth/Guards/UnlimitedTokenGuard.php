@@ -27,7 +27,7 @@ use Illuminate\Http\Request;
 use Premierstacks\LaravelStack\Auth\Models\UnlimitedToken;
 use Premierstacks\LaravelStack\Config\Conf;
 use Premierstacks\LaravelStack\Container\InjectTrait;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\PhpStack\Mixed\Assert;
 use Premierstacks\PhpStack\Types\Strings;
 
@@ -88,7 +88,7 @@ class UnlimitedTokenGuard implements GuardContract
 
     public function getAuthManager(): AuthManager
     {
-        return Resolver::authManager();
+        return Resolve::authManager();
     }
 
     public function getConf(): Conf
@@ -183,12 +183,12 @@ class UnlimitedTokenGuard implements GuardContract
 
     public function getCookies(): CookieQueueingFactoryContract
     {
-        return Resolver::cookieQueueingFactoryContract();
+        return Resolve::cookieQueueingFactoryContract();
     }
 
     public function getGate(): Gate
     {
-        return Resolver::gate();
+        return Resolve::gate();
     }
 
     public function getGuardName(): string
@@ -198,7 +198,7 @@ class UnlimitedTokenGuard implements GuardContract
 
     public function getRequest(): Request
     {
-        return Resolver::request();
+        return Resolve::request();
     }
 
     public function getUnlimitedToken(): UnlimitedToken|null
@@ -369,7 +369,7 @@ class UnlimitedTokenGuard implements GuardContract
         $config = $this->getConfig();
 
         if (\array_key_exists('unlimited_token', $config)) {
-            return Resolver::resolve(Assert::string($config['unlimited_token']), UnlimitedToken::class);
+            return Resolve::resolve(Assert::string($config['unlimited_token']), UnlimitedToken::class);
         }
 
         return UnlimitedToken::inject();

@@ -115,7 +115,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\HttpKernel;
 
-class Resolver
+class Resolve
 {
     public static function application(): Application
     {

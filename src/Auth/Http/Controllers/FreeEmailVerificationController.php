@@ -22,14 +22,14 @@ use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\Exceptions\Thrower;
 
 class FreeEmailVerificationController extends EmailVerificationController
 {
     public function getAuthManager(): AuthManager
     {
-        return Resolver::authManager();
+        return Resolve::authManager();
     }
 
     #[\Override]

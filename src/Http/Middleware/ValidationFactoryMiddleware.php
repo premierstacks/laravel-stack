@@ -21,14 +21,14 @@ use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Factory;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ValidationFactoryMiddleware
 {
     public function getContainer(): ContainerContract
     {
-        return Resolver::containerContract();
+        return Resolve::containerContract();
     }
 
     /**
@@ -37,7 +37,7 @@ class ValidationFactoryMiddleware
     public function handle(Request $request, \Closure $next, string $concrete): SymfonyResponse
     {
         $this->getContainer()->afterResolving('validator', static function (Factory $factory) use ($concrete): void {
-            $factory->resolver(static fn(Translator $translator, array $data, array $rules, array $messages, array $attributes): Validator => Resolver::resolve($concrete, Validator::class, ['translator' => $translator, 'data' => $data, 'rules' => $rules, 'messages' => $messages, 'attributes' => $attributes]));
+            $factory->resolver(static fn(Translator $translator, array $data, array $rules, array $messages, array $attributes): Validator => Resolve::resolve($concrete, Validator::class, ['translator' => $translator, 'data' => $data, 'rules' => $rules, 'messages' => $messages, 'attributes' => $attributes]));
         });
 
         return $next($request);

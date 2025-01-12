@@ -19,7 +19,7 @@ namespace Premierstacks\LaravelStack\Http;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Http\Request;
 use Premierstacks\LaravelStack\Container\InjectTrait;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 
 class RequestSignature
 {
@@ -42,7 +42,7 @@ class RequestSignature
 
     public function getRequest(): Request
     {
-        return Resolver::request();
+        return Resolve::request();
     }
 
     /**

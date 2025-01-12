@@ -23,7 +23,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Premierstacks\LaravelStack\Auth\Guards\UnlimitedTokenGuard;
 use Premierstacks\LaravelStack\Auth\Models\UnlimitedToken;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\PhpStack\JsonApi\JsonApiRelationship;
 use Premierstacks\PhpStack\JsonApi\JsonApiRelationshipInterface;
 use Premierstacks\PhpStack\JsonApi\JsonApiResourceIdentifierInterface;
@@ -51,7 +51,7 @@ class AuthJsonApiResource extends AuthenticatableJsonApiResource
 
     public function createUnlimitedTokenRelationship(UnlimitedToken|null $unlimitedToken): JsonApiRelationshipInterface
     {
-        return Resolver::inject(JsonApiRelationship::class, parameters: ['data' => $this->createUnlimitedTokenJsonApiResource($unlimitedToken)]);
+        return Resolve::inject(JsonApiRelationship::class, parameters: ['data' => $this->createUnlimitedTokenJsonApiResource($unlimitedToken)]);
     }
 
     /**
@@ -97,7 +97,7 @@ class AuthJsonApiResource extends AuthenticatableJsonApiResource
 
     public function getGuard(): Guard
     {
-        return Resolver::guardContract();
+        return Resolve::guardContract();
     }
 
     /**

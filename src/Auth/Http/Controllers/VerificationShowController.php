@@ -29,7 +29,7 @@ use Illuminate\Validation\Factory;
 use Illuminate\Validation\Validator;
 use Premierstacks\LaravelStack\Auth\Http\JsonApi\VerificationJsonApiResource;
 use Premierstacks\LaravelStack\Auth\Http\Validation\VerificationValidity;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\JsonApi\JsonApiResponseFactory;
 use Premierstacks\LaravelStack\Verification\VerificationInterface;
 use Premierstacks\LaravelStack\Verification\Verificator;
@@ -89,7 +89,7 @@ class VerificationShowController
 
     public function getAuthenticatable(): Authenticatable|null
     {
-        return \once(static fn(): Authenticatable|null => Resolver::authenticatableContract());
+        return \once(static fn(): Authenticatable|null => Resolve::authenticatableContract());
     }
 
     public function getAuthenticateAbility(): bool|string
@@ -105,7 +105,7 @@ class VerificationShowController
 
     public function getGate(): Gate
     {
-        return Resolver::gate();
+        return Resolve::gate();
     }
 
     /**
@@ -124,7 +124,7 @@ class VerificationShowController
 
     public function getJsonApiDocument(): JsonApiDocumentInterface
     {
-        return Resolver::inject(JsonApiDocument::class, ['data' => $this->getJsonApiData()]);
+        return Resolve::inject(JsonApiDocument::class, ['data' => $this->getJsonApiData()]);
     }
 
     public function getJsonApiResponseFactory(): JsonApiResponseFactory
@@ -134,7 +134,7 @@ class VerificationShowController
 
     public function getRequest(): Request
     {
-        return Resolver::request();
+        return Resolve::request();
     }
 
     public function getResponse(): JsonResponse
@@ -149,7 +149,7 @@ class VerificationShowController
 
     public function getRouter(): Router
     {
-        return Resolver::router();
+        return Resolve::router();
     }
 
     /**
@@ -170,7 +170,7 @@ class VerificationShowController
 
     public function getValidationFactory(): Factory
     {
-        return Resolver::validationFactory();
+        return Resolve::validationFactory();
     }
 
     /**

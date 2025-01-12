@@ -22,7 +22,7 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Premierstacks\LaravelStack\Container\InjectTrait;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\PhpStack\JsonApi\JsonApiResource;
 use Premierstacks\PhpStack\Mixed\Assert;
 
@@ -58,7 +58,7 @@ class AuthenticatableJsonApiResource extends JsonApiResource
 
     public function getGate(): Gate
     {
-        return Resolver::gateContract();
+        return Resolve::gateContract();
     }
 
     #[\Override]

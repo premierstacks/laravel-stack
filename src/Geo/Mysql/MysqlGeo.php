@@ -18,7 +18,7 @@ namespace Premierstacks\LaravelStack\Geo\Mysql;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\Geo\Objects\Geom;
 use Premierstacks\LaravelStack\Geo\Objects\Point;
 use Premierstacks\PhpStack\Mixed\Filter;
@@ -27,7 +27,7 @@ class MysqlGeo
 {
     public static function getGeomGeomContains(Geom $boundary, Geom $geom): bool
     {
-        $connection = Resolver::databaseConnectionContract();
+        $connection = Resolve::databaseConnectionContract();
 
         $result = $connection->selectOne("select st_contains({$boundary->getGeomFromText()}, {$geom->getGeomFromText()}) as contains");
 
@@ -44,7 +44,7 @@ class MysqlGeo
 
     public static function getGeomGeomDistance(Geom $a, Geom $b): float
     {
-        $connection = Resolver::databaseConnectionContract();
+        $connection = Resolve::databaseConnectionContract();
 
         $result = $connection->selectOne("select st_distance_sphere({$a->getGeomFromText()}, {$b->getGeomFromText()}) as distance");
 
@@ -99,7 +99,7 @@ class MysqlGeo
 
     public static function validateGeom(Geom $geom): bool
     {
-        $connection = Resolver::databaseConnectionContract();
+        $connection = Resolve::databaseConnectionContract();
 
         $result = $connection->selectOne("select st_isvalid({$geom->getGeomFromText()}) as is_valid");
 

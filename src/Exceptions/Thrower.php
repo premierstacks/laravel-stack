@@ -19,7 +19,7 @@ namespace Premierstacks\LaravelStack\Exceptions;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use Premierstacks\LaravelStack\Container\InjectTrait;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 
 class Thrower
 {
@@ -85,7 +85,7 @@ class Thrower
 
     public function throwable(int|null $status = null, string|null $errorBag = null, string|null $redirectTo = null): ValidationException
     {
-        $throwable = Resolver::resolve($this->validator->getException(), ValidationException::class, ['validator' => $this->validator]);
+        $throwable = Resolve::resolve($this->validator->getException(), ValidationException::class, ['validator' => $this->validator]);
 
         if ($status !== null) {
             $throwable->status($status);

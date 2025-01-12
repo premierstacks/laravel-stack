@@ -29,7 +29,7 @@ use Illuminate\Support\ViewErrorBag;
 use Illuminate\Validation\ValidationException;
 use Premierstacks\LaravelStack\Config\Conf;
 use Premierstacks\LaravelStack\Container\InjectTrait;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\JsonApi\JsonApiResponseFactory;
 use Premierstacks\LaravelStack\JsonApi\ThrowableJsonApiErrors;
 use Premierstacks\LaravelStack\Translation\Trans;
@@ -56,8 +56,8 @@ class ExceptionHandler extends Handler
 
     public function createJsonResponse(Request $request, \Throwable $throwable): JsonResponse
     {
-        $errors = Resolver::resolve(ThrowableJsonApiErrors::class, ThrowableJsonApiErrors::class, ['throwable' => $throwable]);
-        $document = Resolver::resolve(JsonApiDocument::class, JsonApiDocument::class, ['errors' => $errors]);
+        $errors = Resolve::resolve(ThrowableJsonApiErrors::class, ThrowableJsonApiErrors::class, ['throwable' => $throwable]);
+        $document = Resolve::resolve(JsonApiDocument::class, JsonApiDocument::class, ['errors' => $errors]);
 
         return $this->getJsonApiResponseFactory()->json($document, $this->getThrowableStatusCode($throwable), $this->getThrowableHeaders($throwable))->withException($throwable);
     }
@@ -95,7 +95,7 @@ class ExceptionHandler extends Handler
 
     public function getResponseFactory(): ResponseFactory
     {
-        return Resolver::responseFactoryContract();
+        return Resolve::responseFactoryContract();
     }
 
     public function getThrowableCode(\Throwable $throwable): int

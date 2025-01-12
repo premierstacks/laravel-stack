@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Premierstacks\LaravelStack\Commands;
 
 use Illuminate\Console\Command;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 
 class ScoutSyncCommand extends Command
 {
@@ -29,9 +29,9 @@ class ScoutSyncCommand extends Command
     {
         $this->call('scout:sync-index-settings');
 
-        $classes = Resolver::filesystem()->files(Resolver::application()->path('Models'));
+        $classes = Resolve::filesystem()->files(Resolve::application()->path('Models'));
 
-        $namespace = Resolver::applicationContract()->getNamespace();
+        $namespace = Resolve::applicationContract()->getNamespace();
 
         foreach ($classes as $class) {
             try {

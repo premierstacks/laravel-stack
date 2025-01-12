@@ -18,14 +18,14 @@ namespace Premierstacks\LaravelStack\Http\Middleware;
 
 use Illuminate\Contracts\Container\Container as ContainerContract;
 use Illuminate\Http\Request;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class SingletonMiddleware
 {
     public function getContainer(): ContainerContract
     {
-        return Resolver::containerContract();
+        return Resolve::containerContract();
     }
 
     /**

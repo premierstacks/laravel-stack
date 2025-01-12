@@ -19,7 +19,7 @@ namespace Premierstacks\LaravelStack\Database;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder as SchemaBuilder;
 use Premierstacks\LaravelStack\Container\InjectTrait;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\PhpStack\Debug\Errorf;
 
 class Migrator
@@ -142,6 +142,6 @@ class Migrator
 
     public function getSchemaBuilder(): SchemaBuilder
     {
-        return Resolver::schemaBuilder();
+        return Resolve::schemaBuilder();
     }
 }

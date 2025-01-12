@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\Exceptions\Thrower;
 use Premierstacks\LaravelStack\Translation\Trans;
 use Premierstacks\PhpStack\Mixed\Assert;
@@ -44,7 +44,7 @@ class MineEmailVerificationController extends EmailVerificationController
     #[\Override]
     public function getAuthenticatable(): Authenticatable
     {
-        return \once(static fn(): Authenticatable => Resolver::authenticatableContract() ?? throw new AuthenticationException(guards: [null]));
+        return \once(static fn(): Authenticatable => Resolve::authenticatableContract() ?? throw new AuthenticationException(guards: [null]));
     }
 
     /**
@@ -103,7 +103,7 @@ class MineEmailVerificationController extends EmailVerificationController
 
     public function getHasher(): Hasher
     {
-        return Resolver::hasherContract();
+        return Resolve::hasherContract();
     }
 
     public function getPassword(): string

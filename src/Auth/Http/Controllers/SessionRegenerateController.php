@@ -26,7 +26,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Premierstacks\LaravelStack\Auth\Http\JsonApi\SessionJsonApiResource;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\JsonApi\JsonApiResponseFactory;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocument;
 use Premierstacks\PhpStack\JsonApi\JsonApiDocumentInterface;
@@ -57,7 +57,7 @@ class SessionRegenerateController
 
     public function getAuthenticatable(): Authenticatable|null
     {
-        return \once(static fn(): Authenticatable|null => Resolver::authenticatableContract());
+        return \once(static fn(): Authenticatable|null => Resolve::authenticatableContract());
     }
 
     public function getAuthenticateAbility(): bool|string
@@ -73,7 +73,7 @@ class SessionRegenerateController
 
     public function getGate(): Gate
     {
-        return Resolver::gate();
+        return Resolve::gate();
     }
 
     /**
@@ -86,7 +86,7 @@ class SessionRegenerateController
 
     public function getJsonApiDocument(): JsonApiDocumentInterface
     {
-        return Resolver::inject(JsonApiDocument::class, ['data' => $this->getJsonApiData()]);
+        return Resolve::inject(JsonApiDocument::class, ['data' => $this->getJsonApiData()]);
     }
 
     public function getJsonApiResponseFactory(): JsonApiResponseFactory
@@ -96,7 +96,7 @@ class SessionRegenerateController
 
     public function getRequest(): Request
     {
-        return Resolver::request();
+        return Resolve::request();
     }
 
     public function getResponse(): JsonResponse|RedirectResponse|Response
@@ -111,7 +111,7 @@ class SessionRegenerateController
 
     public function getRouter(): Router
     {
-        return Resolver::router();
+        return Resolve::router();
     }
 
     public function handle(): JsonResponse|RedirectResponse|Response

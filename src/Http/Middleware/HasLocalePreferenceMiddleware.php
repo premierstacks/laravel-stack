@@ -20,14 +20,14 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Http\Request;
 use Premierstacks\LaravelStack\Config\Conf;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class HasLocalePreferenceMiddleware
 {
     public function getAuthenticatable(): Authenticatable|null
     {
-        return Resolver::authenticatableContract();
+        return Resolve::authenticatableContract();
     }
 
     public function getConf(): Conf

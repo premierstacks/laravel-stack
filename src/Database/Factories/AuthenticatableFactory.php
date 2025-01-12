@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Premierstacks\LaravelStack\Config\Conf;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 
 /**
  * @template T of Model
@@ -71,7 +71,7 @@ class AuthenticatableFactory extends Factory
         }
 
         if (\in_array('locale', $keys, true)) {
-            $attributes['locale'] = \fake()->randomElement(Resolver::resolve(Conf::class, Conf::class)->getAppLocales());
+            $attributes['locale'] = \fake()->randomElement(Resolve::resolve(Conf::class, Conf::class)->getAppLocales());
         }
 
         if (\in_array('first_name', $keys, true)) {

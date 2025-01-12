@@ -34,7 +34,7 @@ use Illuminate\Validation\Validator;
 use Premierstacks\LaravelStack\Auth\Guards\UnlimitedTokenGuard;
 use Premierstacks\LaravelStack\Auth\Http\Validation\AuthenticatableValidity;
 use Premierstacks\LaravelStack\Auth\Http\Validation\VerificationValidity;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\LaravelStack\Exceptions\Thrower;
 use Premierstacks\LaravelStack\JsonApi\JsonApiResponseFactory;
 use Premierstacks\LaravelStack\Translation\Trans;
@@ -97,12 +97,12 @@ class LogoutAllDevicesController
 
     public function getAuthManager(): AuthManager
     {
-        return Resolver::authManager();
+        return Resolve::authManager();
     }
 
     public function getAuthenticatable(): Authenticatable
     {
-        return \once(static fn(): Authenticatable => Resolver::authenticatableContract() ?? throw new AuthenticationException(guards: [null]));
+        return \once(static fn(): Authenticatable => Resolve::authenticatableContract() ?? throw new AuthenticationException(guards: [null]));
     }
 
     public function getAuthenticatableValidity(): AuthenticatableValidity
@@ -135,7 +135,7 @@ class LogoutAllDevicesController
 
     public function getGate(): Gate
     {
-        return Resolver::gate();
+        return Resolve::gate();
     }
 
     public function getGuard(): mixed
@@ -145,7 +145,7 @@ class LogoutAllDevicesController
 
     public function getHasher(): Hasher
     {
-        return Resolver::hasherContract();
+        return Resolve::hasherContract();
     }
 
     /**
@@ -158,7 +158,7 @@ class LogoutAllDevicesController
 
     public function getJsonApiDocument(): JsonApiDocumentInterface
     {
-        return Resolver::inject(JsonApiDocument::class, ['data' => $this->getJsonApiData()]);
+        return Resolve::inject(JsonApiDocument::class, ['data' => $this->getJsonApiData()]);
     }
 
     public function getJsonApiResponseFactory(): JsonApiResponseFactory
@@ -186,7 +186,7 @@ class LogoutAllDevicesController
 
     public function getRequest(): Request
     {
-        return Resolver::request();
+        return Resolve::request();
     }
 
     public function getResponse(): JsonResponse|RedirectResponse|Response
@@ -203,7 +203,7 @@ class LogoutAllDevicesController
 
     public function getRouter(): Router
     {
-        return Resolver::router();
+        return Resolve::router();
     }
 
     public function getScope(): string
@@ -250,7 +250,7 @@ class LogoutAllDevicesController
 
     public function getValidationFactory(): Factory
     {
-        return Resolver::validationFactory();
+        return Resolve::validationFactory();
     }
 
     /**

@@ -20,7 +20,7 @@ use Illuminate\Cache\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit as IlluminateLimit;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Premierstacks\LaravelStack\Container\InjectTrait;
-use Premierstacks\LaravelStack\Container\Resolver;
+use Premierstacks\LaravelStack\Container\Resolve;
 use Premierstacks\PhpStack\Mixed\Assert;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
@@ -119,7 +119,7 @@ class Limiter
 
     public function getLimiter(): RateLimiter
     {
-        return \once(static fn(): RateLimiter => Resolver::rateLimiter());
+        return \once(static fn(): RateLimiter => Resolve::rateLimiter());
     }
 
     /**

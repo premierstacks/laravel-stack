@@ -23,6 +23,6 @@ trait InjectTrait
      */
     public static function inject(array $parameters = []): static
     {
-        return Resolver::inject(static::class, $parameters);
+        return Resolve::inject(static::class, $parameters);
     }
 }
