@@ -5,6 +5,9 @@
 .vscode
 .zed
 
+# svg
+*.svg
+
 # node
 /node_modules
 /package-lock.json
@@ -16,47 +19,6 @@
 # phpunit
 /.phpunit.cache
 /.phpunit.coverage
-/.phpunit.result.cache
 
 # php-cs-fixer
 /.php-cs-fixer.cache
-
-# phpactor
-/.phpactor.json
-
-# vendor
-/assets/vendor
-/public/vendor
-/resources/vendor
-/static/vendor
-
-# typescript
-/tsconfig.tsbuildinfo
-
-# compiled files
-/build
-/dist
-
-# laravel
-.env
-.env.backup
-.env.development
-.env.local
-.env.production
-.env.staging
-.env.testing
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
-
-# svg
-*.svg
-
-# storage
-/storage
