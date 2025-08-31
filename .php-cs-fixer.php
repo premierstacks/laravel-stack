@@ -18,4 +18,4 @@ use Premierstacks\PhpCsFixerStack\ConfigFactory;
 use Premierstacks\PhpCsFixerStack\Configs\Premierstacks;
 use Premierstacks\PhpCsFixerStack\FinderFactory;
 
-return ConfigFactory::make(FinderFactory::make()->in(__DIR__), Premierstacks::rules());
+return ConfigFactory::make(FinderFactory::make()->in(__DIR__)->notName('TestCase.php'), Premierstacks::rules());
