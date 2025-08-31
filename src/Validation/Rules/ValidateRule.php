@@ -2,7 +2,7 @@
 
 /**
  * @author Tomáš Chochola <chocholatom1997@gmail.com>
- * @copyright © 2025, Tomáš Chochola <chocholatom1997@gmail.com>. Some rights reserved.
+ * @copyright © 2025 Tomáš Chochola <chocholatom1997@gmail.com>
  *
  * @license CC-BY-ND-4.0
  *
@@ -43,7 +43,9 @@ class ValidateRule extends ValidationRule
         }
 
         foreach ($clone->errors()->messages() as $k => $v) {
-            $validator->messages()->add((string) $k, Assert::nonEmptyString($v));
+            foreach ($v as $w) {
+                $validator->messages()->add((string) $k, $w);
+            }
         }
 
         foreach ($clone->failed() as $k => $v) {

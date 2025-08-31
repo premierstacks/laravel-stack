@@ -2,7 +2,7 @@
 
 /**
  * @author Tomáš Chochola <chocholatom1997@gmail.com>
- * @copyright © 2025, Tomáš Chochola <chocholatom1997@gmail.com>. Some rights reserved.
+ * @copyright © 2025 Tomáš Chochola <chocholatom1997@gmail.com>
  *
  * @license CC-BY-ND-4.0
  *
@@ -23,6 +23,13 @@ use Random\Randomizer;
 
 class Bbox implements Expression, Geom
 {
+    /**
+     * @var array<string, array{float, float, float, float}>
+     */
+    public const array INNER_BOX = [
+        'CZ' => [50.472_953_1, 13.235_706_7, 49.355_252_2, 15.982_288_6],
+    ];
+
     /**
      * @var array<string, array{float, float, float, float}>
      */
@@ -276,13 +283,6 @@ class Bbox implements Expression, Geom
         'CW' => [12.045, -69.123, 12.385, -68.733],
         'SX' => [18.01, -63.145, 18.064, -63.01],
         'SS' => [3.488, -34.956, 12.246, 23.467],
-    ];
-
-    /**
-     * @var array<string, array{float, float, float, float}>
-     */
-    public const array INNER_BOX = [
-        'CZ' => [50.472_953_1, 13.235_706_7, 49.355_252_2, 15.982_288_6],
     ];
 
     public function __construct(public Point $topLeft, public Point $bottomRight) {}

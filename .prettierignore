@@ -5,9 +5,6 @@
 .vscode
 .zed
 
-# svg
-*.svg
-
 # node
 /node_modules
 /package-lock.json
@@ -19,6 +16,20 @@
 # phpunit
 /.phpunit.cache
 /.phpunit.coverage
+/.phpunit.result.cache
 
 # php-cs-fixer
 /.php-cs-fixer.cache
+
+# svg
+*.svg
+
+# eslint
+*.tsx
+*.mts
+*.ts
+*.cts
+*.jsx
+*.mjs
+*.js
+*.cjs

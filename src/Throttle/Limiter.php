@@ -2,7 +2,7 @@
 
 /**
  * @author Tomáš Chochola <chocholatom1997@gmail.com>
- * @copyright © 2025, Tomáš Chochola <chocholatom1997@gmail.com>. Some rights reserved.
+ * @copyright © 2025 Tomáš Chochola <chocholatom1997@gmail.com>
  *
  * @license CC-BY-ND-4.0
  *
@@ -180,7 +180,7 @@ class Limiter
             throw new HttpResponseException($callback($in));
         }
 
-        if (isset($this->limit->responseCallback)) {
+        if (isset($this->limit->responseCallback)) { // @phpstan-ignore-line isset.initializedProperty
             throw new HttpResponseException(Assert::instance(($this->limit->responseCallback)(), Response::class, '$this->limit->responseCallback'));
         }
 

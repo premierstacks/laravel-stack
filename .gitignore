@@ -16,6 +16,7 @@
 # phpunit
 /.phpunit.cache
 /.phpunit.coverage
+/.phpunit.result.cache
 
 # php-cs-fixer
 /.php-cs-fixer.cache

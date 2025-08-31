@@ -2,7 +2,7 @@
 
 /**
  * @author Tomáš Chochola <chocholatom1997@gmail.com>
- * @copyright © 2025, Tomáš Chochola <chocholatom1997@gmail.com>. Some rights reserved.
+ * @copyright © 2025 Tomáš Chochola <chocholatom1997@gmail.com>
  *
  * @license CC-BY-ND-4.0
  *
@@ -174,7 +174,7 @@ class CredentialsUpdateController
     }
 
     /**
-     * @return array<array-key, mixed>
+     * @return array<string, mixed>
      */
     public function getPayload(): array
     {

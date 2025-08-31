@@ -1,7 +1,7 @@
 /**
  * @file
  * @author Tomáš Chochola <chocholatom1997@gmail.com>
- * @copyright © 2025, Tomáš Chochola <chocholatom1997@gmail.com>. Some rights reserved.
+ * @copyright © 2025 Tomáš Chochola <chocholatom1997@gmail.com>
  *
  * @license CC-BY-ND-4.0
  *
@@ -11,6 +11,12 @@
  * @see {@link https://github.com/sponsors/tomchochola} GitHub Sponsors
  */
 
-import { recommended } from '@premierstacks/prettier-stack';
+import { PrettierStack } from '@premierstacks/prettier-stack';
 
-export default recommended();
+// eslint-disable-next-line no-restricted-exports
+export default PrettierStack.create()
+  .base()
+  .pug()
+  .ruby()
+  .xml()
+  .build();

@@ -1,7 +1,7 @@
 /**
  * @file
  * @author Tomáš Chochola <chocholatom1997@gmail.com>
- * @copyright © 2025, Tomáš Chochola <chocholatom1997@gmail.com>. Some rights reserved.
+ * @copyright © 2025 Tomáš Chochola <chocholatom1997@gmail.com>
  *
  * @license CC-BY-ND-4.0
  *
@@ -11,6 +11,19 @@
  * @see {@link https://github.com/sponsors/tomchochola} GitHub Sponsors
  */
 
-import { configs, ignores, node } from '@premierstacks/eslint-stack';
+import { EslintStack } from '@premierstacks/eslint-stack';
+import globals from 'globals';
 
-export default [...ignores(), ...node(), ...configs()];
+// eslint-disable-next-line no-restricted-exports
+export default EslintStack.create()
+  .base()
+  .globals({
+    ...globals.node,
+    ...globals.es2024,
+  })
+  .ignores([...EslintStack.Selectors.GlobalIgnore])
+  .ignores(['node_modules', 'vendor', '.phpunit.cache', '.phpunit.coverage', '.phpunit.result.cache', '.php-cs-fixer.cache'])
+  .recommended()
+  .stylistic()
+  .sonarjs()
+  .build();

@@ -2,7 +2,7 @@
 
 /**
  * @author Tomáš Chochola <chocholatom1997@gmail.com>
- * @copyright © 2025, Tomáš Chochola <chocholatom1997@gmail.com>. Some rights reserved.
+ * @copyright © 2025 Tomáš Chochola <chocholatom1997@gmail.com>
  *
  * @license CC-BY-ND-4.0
  *
@@ -48,8 +48,8 @@ class MixedModel extends IlluminateModel
     }
 
     /**
-     * @param array<array-key, mixed> $attributes
-     * @param array<array-key, mixed> $options
+     * @param array<string, mixed> $attributes
+     * @param array<string, mixed> $options
      */
     public function mustUpdate(array $attributes = [], array $options = []): true
     {

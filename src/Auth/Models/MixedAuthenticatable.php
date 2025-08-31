@@ -2,7 +2,7 @@
 
 /**
  * @author Tomáš Chochola <chocholatom1997@gmail.com>
- * @copyright © 2025, Tomáš Chochola <chocholatom1997@gmail.com>. Some rights reserved.
+ * @copyright © 2025 Tomáš Chochola <chocholatom1997@gmail.com>
  *
  * @license CC-BY-ND-4.0
  *
@@ -30,9 +30,6 @@ abstract class MixedAuthenticatable extends IlluminateUser implements HasLocaleP
     use MixedModelTrait;
     use Notifiable;
 
-    /**
-     * @var array<array-key, mixed>
-     */
     protected $attributes = [
         'id' => null,
         'email' => null,
