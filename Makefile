@@ -97,7 +97,7 @@ test_phpunit: ./vendor/bin/phpunit ./phpunit.xml
 	${MAKE_COMPOSER} run test:phpunit
 
 # Dependencies
- ./node_modules ./node_modules/.bin/eslint ./node_modules/.bin/prettier: ./package-lock.json
+./node_modules ./node_modules/.bin/eslint ./node_modules/.bin/prettier: ./package-lock.json
 	${MAKE_NPM} run npm:install
 	touch ./package-lock.json
 	touch ./node_modules
